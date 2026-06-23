@@ -43,8 +43,7 @@ app = FastAPI(title="Movie Backend API")
 # =========================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173",
-        "https://collect-c0q35g8ji-karthiks2202s-projects.vercel.app",],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
