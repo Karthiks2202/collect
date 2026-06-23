@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import false
 
 from app.database import Base, engine
 from app import models
@@ -44,9 +45,9 @@ app = FastAPI(title="Movie Backend API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins = [
-    "https://collect.vercel.app"
+    "*"
 ],
-    allow_credentials=True,
+    allow_credentials=false,
     allow_methods=["*"],
     allow_headers=["*"],
 )
