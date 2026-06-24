@@ -1,33 +1,29 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUnreadCount } from "../services/notificationService";
 
 function Navbar() {
- const navigate = useNavigate();
-   const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    loadCount();
-  }, []);
+  const navigate = useNavigate();
+  const [count, setCount] = useState(0);
 
   const loadCount = async () => {
     try {
       const data = await getUnreadCount();
       setCount(data.count);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to load unread count:", error);
     }
   };
-   useEffect(() => {
+
+  useEffect(() => {
     loadCount();
 
     // Refresh every 30 seconds
-    const interval = setInterval(loadUnreadCount, 30000);
+    const interval = setInterval(loadCount, 30000);
 
     return () => clearInterval(interval);
   }, []);
-  
+
   return (
 
     <div className="navbar">
@@ -37,8 +33,7 @@ function Navbar() {
       </div>
 
       <div className="nav-right">
-
-            <button
+        <button
           className="notification-btn"
           onClick={() => navigate("/notifications")}
         >
@@ -62,7 +57,7 @@ function Navbar() {
       </div>
 
     </div>
-
+    
   );
 }
 
