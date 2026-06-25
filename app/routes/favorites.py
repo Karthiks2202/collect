@@ -12,6 +12,8 @@ from app.models.user import User
 from app.auth import get_current_user
 from app.schemas.favorite import FavoriteCreate
 
+# Notification service
+from app.services.notification_service import send_notification
 
 router = APIRouter(
     prefix="/favorites",
@@ -55,6 +57,16 @@ def add_favorite(
     db.add(new_favorite)
     db.commit()
     db.refresh(new_favorite)
+
+    # =========================
+    # CREATE NOTIFICATION
+    # =========================
+    send_notification(
+        db=db,
+        user_id=current_user.id,
+        message=f'"{favorite.movie_title}" was added to your favorites.',
+        notification_type="favorite"
+    )
 
     return {
         "success": True,
@@ -113,8 +125,20 @@ def delete_favorite(
             detail="Favorite not found"
         )
 
+    movie_title = favorite.movie_title
+
     db.delete(favorite)
     db.commit()
+
+    # =========================
+    # CREATE NOTIFICATION
+    # =========================
+    send_notification(
+        db=db,
+        user_id=current_user.id,
+        message=f'"{movie_title}" was removed from your favorites.',
+        notification_type="favorite"
+    )
 
     return {
         "success": True,

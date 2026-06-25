@@ -21,6 +21,8 @@ router = APIRouter(
     prefix="/reviews",
     tags=["Reviews"]
 )
+
+
 @router.post("/")
 def add_review(
     review: ReviewCreate,
@@ -59,6 +61,8 @@ def add_review(
         "success": True,
         "message": "Review added successfully"
     }
+
+
 @router.get("/{movie_id}")
 def get_reviews(
     movie_id: str,
@@ -77,6 +81,8 @@ def get_reviews(
         "success": True,
         "reviews": reviews
     }
+
+
 @router.put("/{review_id}")
 def update_review(
     review_id: int,
@@ -109,6 +115,8 @@ def update_review(
         "success": True,
         "message": "Review updated"
     }
+
+
 @router.delete("/{review_id}")
 def delete_review(
     review_id: int,
@@ -138,6 +146,8 @@ def delete_review(
         "success": True,
         "message": "Review deleted"
     }
+
+
 @router.get("/average/{movie_id}")
 def average_rating(
     movie_id: str,
@@ -169,13 +179,20 @@ def average_rating(
         "movie_id": movie_id,
         "average_rating": round(avg, 1)
     }
+
+
 @router.post("/{review_id}/like")
 def like_review(
     review_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    review = db.query(Review).filter(Review.id == review_id).first()
+
+    review = (
+        db.query(Review)
+        .filter(Review.id == review_id)
+        .first()
+    )
 
     if not review:
         raise HTTPException(
@@ -206,13 +223,21 @@ def like_review(
     db.add(like)
     db.commit()
 
+    # Debug prints
+    print("Review owner:", review.user_id)
+    print("Current user:", current_user.id)
+
     if review.user_id != current_user.id:
-        send_notification(
+        print("Creating notification...")
+
+        notification = send_notification(
             db=db,
             user_id=review.user_id,
             message=f"{current_user.username} liked your review.",
             notification_type="review_like",
         )
+
+        print("Notification created:", notification.id)
 
     return {
         "success": True,

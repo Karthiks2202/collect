@@ -51,7 +51,10 @@ def like_review(
     )
 
     db.add(like)
+    db.commit()
+    db.refresh(like)
 
+    # Notify the review owner (but not yourself)
     if review.user_id != current_user.id:
         send_notification(
             db=db,
@@ -59,8 +62,7 @@ def like_review(
             message=f"{current_user.username} liked your review.",
             notification_type="review_like",
         )
-    else:
-        db.commit()
+        
 
     return {
         "success": True,

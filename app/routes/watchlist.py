@@ -9,6 +9,9 @@ from app.models.watchlist import Watchlist
 
 from app.schemas.watchlist import WatchlistCreate
 
+# Notification Service
+from app.services.notification_service import send_notification
+
 router = APIRouter(
     prefix="/watchlist",
     tags=["Watchlist"]
@@ -51,6 +54,14 @@ def add_watchlist(
     db.add(new_movie)
     db.commit()
     db.refresh(new_movie)
+
+    # Create notification
+    send_notification(
+        db=db,
+        user_id=current_user.id,
+        message=f'"{watchlist.movie_title}" was added to your watchlist.',
+        notification_type="watchlist"
+    )
 
     return {
         "success": True,
@@ -106,8 +117,18 @@ def remove_watchlist(
             detail="Movie not found"
         )
 
+    movie_title = movie.movie_title
+
     db.delete(movie)
     db.commit()
+
+    # Create notification
+    send_notification(
+        db=db,
+        user_id=current_user.id,
+        message=f'"{movie_title}" was removed from your watchlist.',
+        notification_type="watchlist"
+    )
 
     return {
         "success": True,
