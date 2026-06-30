@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../services/api";
+import { useCompare } from "../context/CompareContext";
 import {
   getCollections,
   addMovieToCollection,
@@ -8,6 +9,10 @@ import {
 function MovieCard({ movie }) {
   const [collections, setCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState("");
+  const { isMovieSelected, addMovieToCompare, removeMovieFromCompare } = useCompare();
+
+  const movieId = movie.imdbID || movie.movie_id || movie.title;
+  const isSelected = isMovieSelected(movieId);
 
   useEffect(() => {
     loadCollections();
@@ -18,41 +23,25 @@ function MovieCard({ movie }) {
       const data = await getCollections();
       setCollections(data);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to load collections:", error);
     }
   };
 
   // FAVORITES
   const addToFavorites = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        alert("Please login first ❌");
-        return;
-      }
-
       const favoriteData = {
-        movie_id: movie.imdbID || movie.movie_id || movie.title,
+        movie_id: movieId,
         movie_title: movie.title,
         genre: movie.genre,
         poster: movie.poster,
       };
 
-      const response = await axios.post(
-        "https://collect-dd4h.onrender.com/favorites/",
-        favoriteData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      // ✅ Use shared API instance (no hardcoded URL, token auto-attached)
+      const response = await API.post("/favorites/", favoriteData);
       alert(response.data.message || "Added to Favorites ❤️");
     } catch (error) {
-      console.log(error);
-
+      console.error(error);
       alert(error.response?.data?.detail || "Favorite failed ❌");
     }
   };
@@ -60,34 +49,18 @@ function MovieCard({ movie }) {
   // WATCHLIST
   const addToWatchlist = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        alert("Please login first ❌");
-        return;
-      }
-
       const watchlistData = {
-        movie_id: movie.imdbID || movie.movie_id || movie.title,
+        movie_id: movieId,
         movie_title: movie.title,
         genre: movie.genre,
         poster: movie.poster,
       };
 
-      const response = await axios.post(
-        "https://collect-dd4h.onrender.com/watchlist/",
-        watchlistData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      // ✅ Use shared API instance
+      const response = await API.post("/watchlist/", watchlistData);
       alert(response.data.message || "Added to Watchlist 📺");
     } catch (error) {
-      console.log(error);
-
+      console.error(error);
       alert(error.response?.data?.detail || "Watchlist failed ❌");
     }
   };
@@ -95,34 +68,18 @@ function MovieCard({ movie }) {
   // ADD REVIEW
   const addReview = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        alert("Please login first ❌");
-        return;
-      }
-
       const reviewData = {
-        movie_id: movie.imdbID || movie.movie_id || movie.title,
+        movie_id: movieId,
         movie_title: movie.title,
         rating: 5,
         review: "Excellent Movie ⭐",
       };
 
-      const response = await axios.post(
-        "https://collect-dd4h.onrender.com/reviews/",
-        reviewData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      // ✅ Use shared API instance
+      const response = await API.post("/reviews/", reviewData);
       alert(response.data.message || "Review Added ⭐");
     } catch (error) {
-      console.log(error);
-
+      console.error(error);
       alert(error.response?.data?.detail || "Review failed ❌");
     }
   };
@@ -130,12 +87,8 @@ function MovieCard({ movie }) {
   // VIEW REVIEWS
   const getReviews = async () => {
     try {
-      const movieId =
-        movie.imdbID || movie.movie_id || movie.title;
-
-      const response = await axios.get(
-        `https://collect-dd4h.onrender.com/reviews/${movieId}`
-      );
+      // ✅ Use shared API instance
+      const response = await API.get(`/reviews/${movieId}`);
 
       if (response.data.reviews.length === 0) {
         alert("No reviews found");
@@ -143,15 +96,12 @@ function MovieCard({ movie }) {
       }
 
       const reviewsText = response.data.reviews
-        .map(
-          (review) =>
-            `⭐ ${review.rating}/5\n${review.review}`
-        )
+        .map((review) => `⭐ ${review.rating}/5\n${review.review}`)
         .join("\n\n");
 
       alert(reviewsText);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       alert("Failed to load reviews");
     }
   };
@@ -164,21 +114,28 @@ function MovieCard({ movie }) {
     }
 
     try {
-     await addMovieToCollection(selectedCollection, {
-  movie_id: String(
-    movie.imdbID || movie.movie_id || movie.title
-  ),
-  movie_title: movie.title,
-  poster_path: movie.poster,
-});
+      await addMovieToCollection(selectedCollection, {
+        movie_id: String(movieId),
+        movie_title: movie.title,
+        poster_path: movie.poster,
+      });
 
       alert("Movie added to collection 📁");
     } catch (error) {
-      console.log(error);
-      alert(
-        error.response?.data?.detail ||
-          "Failed to add movie"
-      );
+      console.error(error);
+      alert(error.response?.data?.detail || "Failed to add movie");
+    }
+  };
+
+  const handleCompareToggle = () => {
+    if (isSelected) {
+      removeMovieFromCompare(movieId);
+    } else {
+      addMovieToCompare({
+        id: movieId,
+        title: movie.title,
+        poster: movie.poster,
+      });
     }
   };
 
@@ -195,63 +152,49 @@ function MovieCard({ movie }) {
 
       <div className="movie-info">
         <h3>{movie.title}</h3>
-
         <p>{movie.genre}</p>
-
         <p>{movie.reason}</p>
 
-        <button
-          className="fav-btn"
-          onClick={addToFavorites}
-        >
+        <button className="fav-btn" onClick={addToFavorites}>
           ❤️ Favorite
         </button>
 
-        <button
-          className="watch-btn"
-          onClick={addToWatchlist}
-        >
+        <button className="watch-btn" onClick={addToWatchlist}>
           📺 Watchlist
         </button>
 
-        <button
-          className="review-btn"
-          onClick={addReview}
-        >
+        <button className="review-btn" onClick={addReview}>
           ⭐ Add Review
         </button>
 
-        <button
-          className="review-btn"
-          onClick={getReviews}
-        >
+        <button className="review-btn" onClick={getReviews}>
           👁 View Reviews
         </button>
 
         <select
           value={selectedCollection}
-          onChange={(e) =>
-            setSelectedCollection(e.target.value)
-          }
+          onChange={(e) => setSelectedCollection(e.target.value)}
         >
           <option value="">Select Collection</option>
-
           {collections.map((collection) => (
-            <option
-              key={collection.id}
-              value={collection.id}
-            >
+            <option key={collection.id} value={collection.id}>
               {collection.name}
             </option>
           ))}
         </select>
 
-        <button
-          className="collection-btn"
-          onClick={addToCollection}
-        >
+        <button className="collection-btn" onClick={addToCollection}>
           📁 Add to Collection
         </button>
+
+        <div className="compare-checkbox-container">
+          <button
+            className={`compare-toggle-btn ${isSelected ? "selected" : ""}`}
+            onClick={handleCompareToggle}
+          >
+            {isSelected ? "✓ Comparing" : "＋ Compare"}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../services/api";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -10,17 +10,8 @@ const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await axios.get(
-        "https://collect-dd4h.onrender.com/admin/users",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      // ✅ Use shared API instance (no hardcoded URL, token auto-attached)
+      const res = await API.get("/admin/users");
       setUsers(res.data.users);
     } catch (err) {
       console.error(err);
@@ -29,19 +20,8 @@ const AdminUsers = () => {
 
   const deleteUser = async (id) => {
     try {
-      const token = localStorage.getItem("token");
-
-      await axios.delete(
-        `https://collect-dd4h.onrender.com/admin/users/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      await API.delete(`/admin/users/${id}`);
       setUsers(users.filter((user) => user.id !== id));
-
       alert("User deleted successfully");
     } catch (err) {
       console.error(err);

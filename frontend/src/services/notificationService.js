@@ -1,54 +1,23 @@
-import axios from "axios";
+import API from "./api";
 
-const API = "https://collect-dd4h.onrender.com";
-
-const getToken = () => localStorage.getItem("token");
+// ✅ All calls use shared API instance (no hardcoded URL, token auto-attached)
 
 export const getNotifications = async () => {
-  const res = await axios.get(`${API}/notifications`, {
-    headers: {
-      Authorization: `Bearer ${getToken()}`
-    }
-  });
-
+  const res = await API.get("/notifications");
   return res.data;
 };
 
 export const markAsRead = async (id) => {
-  const res = await axios.patch(
-    `${API}/notifications/${id}/read`,
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    }
-  );
-
+  const res = await API.patch(`/notifications/${id}/read`, {});
   return res.data;
 };
 
 export const deleteNotification = async (id) => {
-  const res = await axios.delete(
-    `${API}/notifications/${id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    }
-  );
-
+  const res = await API.delete(`/notifications/${id}`);
   return res.data;
 };
-export const getUnreadCount = async () => {
-  const res = await axios.get(
-    `${API}/notifications/unread-count`,
-    {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    }
-  );
 
+export const getUnreadCount = async () => {
+  const res = await API.get("/notifications/unread-count");
   return res.data;
 };

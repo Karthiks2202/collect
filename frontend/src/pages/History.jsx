@@ -3,7 +3,7 @@ import React, {
   useState
 } from "react";
 
-import axios from "axios";
+import API from "../services/api";
 
 function History() {
 
@@ -17,30 +17,13 @@ function History() {
   }, []);
 
   const fetchHistory = async () => {
-
     try {
-
-      const token =
-        localStorage.getItem("token");
-
-      const response = await axios.get(
-        "https://collect-dd4h.onrender.com/history",
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
-
-      setHistory(response.data.data);
-
+      // ✅ Use shared API instance (no hardcoded URL, token auto-attached)
+      const response = await API.get("/history");
+      setHistory(response.data.data || []);
     } catch (error) {
-
-      console.log(error);
-
+      console.error("Failed to fetch history:", error);
     }
-
   };
 
   return (

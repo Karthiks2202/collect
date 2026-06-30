@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../services/api";
 import "./Watchlist.css";
 
 function Watchlist() {
@@ -11,40 +11,21 @@ function Watchlist() {
 
   const fetchWatchlist = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const response = await axios.get(
-        "https://collect-dd4h.onrender.com/watchlist/",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      // ✅ Use shared API instance (token attached automatically)
+      const response = await API.get("/watchlist/");
       setMovies(response.data.watchlist || []);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch watchlist:", error);
     }
   };
 
   const removeMovie = async (id) => {
     try {
-      const token = localStorage.getItem("token");
-
-      await axios.delete(
-        `https://collect-dd4h.onrender.com/watchlist/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      fetchWatchlist();
-      alert("Removed from watchlist");
+      await API.delete(`/watchlist/${id}`);
+      setMovies(movies.filter((m) => m.id !== id));
     } catch (error) {
-      console.log(error);
+      console.error("Failed to remove from watchlist:", error);
+      alert("Failed to remove movie");
     }
   };
 
@@ -61,10 +42,7 @@ function Watchlist() {
       ) : (
         <div className="watchlist-grid">
           {movies.map((movie) => (
-            <div
-              className="watchlist-card"
-              key={movie.id}
-            >
+            <div className="watchlist-card" key={movie.id}>
               <img
                 src={
                   movie.poster && movie.poster !== "N/A"
@@ -76,9 +54,7 @@ function Watchlist() {
 
               <div className="watchlist-info">
                 <h3>{movie.movie_title}</h3>
-
                 <p>{movie.genre}</p>
-
                 <button
                   className="remove-btn"
                   onClick={() => removeMovie(movie.id)}

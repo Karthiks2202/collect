@@ -20,128 +20,147 @@ import AdminReviews from "./pages/AdminReviews";
 import Collections from "./pages/Collections";
 import CollectionDetails from "./pages/CollectionDetails";
 import Notifications from "./pages/Notifications";
+import ComparePage from "./pages/ComparePage";
 
 // Route Guards
 import ProtectedRoute from "./router";
 import AdminRoute from "./components/AdminRoute";
 
+// Context
+import { CompareProvider } from "./context/CompareContext";
+import CompareBar from "./components/CompareBar";
+
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <CompareProvider>
+      <BrowserRouter>
+        <Routes>
 
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        {/* Home */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
+          {/* Home */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Favorites */}
-        <Route
-          path="/favorites"
-          element={
-            <ProtectedRoute>
-              <Favorites />
-            </ProtectedRoute>
-          }
-        />
+          {/* Compare */}
+          <Route
+            path="/compare"
+            element={
+              <ProtectedRoute>
+                <ComparePage />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* History */}
-        <Route
-          path="/history"
-          element={
-            <ProtectedRoute>
-              <History />
-            </ProtectedRoute>
-          }
-        />
+          {/* Favorites */}
+          <Route
+            path="/favorites"
+            element={
+              <ProtectedRoute>
+                <Favorites />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Watchlist */}
-        <Route
-          path="/watchlist"
-          element={
-            <ProtectedRoute>
-              <Watchlist />
-            </ProtectedRoute>
-          }
-        />
+          {/* History */}
+          <Route
+            path="/history"
+            element={
+              <ProtectedRoute>
+                <History />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Profile */}
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
+          {/* Watchlist */}
+          <Route
+            path="/watchlist"
+            element={
+              <ProtectedRoute>
+                <Watchlist />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Collections */}
-        <Route
-          path="/collections"
-          element={
-            <ProtectedRoute>
-              <Collections />
-            </ProtectedRoute>
-          }
-        />
+          {/* Profile */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Collection Details */}
-        <Route
-          path="/collections/:id"
-          element={
-            <ProtectedRoute>
-              <CollectionDetails />
-            </ProtectedRoute>
-          }
-        />
+          {/* Collections */}
+          <Route
+            path="/collections"
+            element={
+              <ProtectedRoute>
+                <Collections />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Admin Dashboard */}
-        <Route
-          path="/admin"
-          element={
-            <AdminRoute>
-              <AdminDashboard />
-            </AdminRoute>
-          }
-        />
+          {/* Collection Details */}
+          <Route
+            path="/collections/:id"
+            element={
+              <ProtectedRoute>
+                <CollectionDetails />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Admin Users */}
-        <Route
-          path="/admin/users"
-          element={
-            <AdminRoute>
-              <AdminUsers />
-            </AdminRoute>
-          }
-        />
+          {/* Admin Dashboard */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
 
-        {/* Admin Reviews */}
-        <Route
-          path="/admin/reviews"
-          element={
-            <AdminRoute>
-              <AdminReviews />
-            </AdminRoute>
-          }
-        />
+          {/* Admin Users */}
+          <Route
+            path="/admin/users"
+            element={
+              <AdminRoute>
+                <AdminUsers />
+              </AdminRoute>
+            }
+          />
 
-        {/* Redirect Unknown Routes */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Admin Reviews */}
+          <Route
+            path="/admin/reviews"
+            element={
+              <AdminRoute>
+                <AdminReviews />
+              </AdminRoute>
+            }
+          />
 
-<Route path="/notifications" element={<Notifications />} />
+          {/* Redirect Unknown Routes */}
+          <Route path="*" element={<Navigate to="/" replace />} />
 
-<Route path="/notifications" element={<Notifications />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/notifications" element={<Notifications />} />
+        </Routes>
+
+        {/* Global floating comparison bar */}
+        <CompareBar />
+      </BrowserRouter>
+    </CompareProvider>
   );
 }
 

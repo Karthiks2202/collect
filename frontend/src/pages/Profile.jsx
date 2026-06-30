@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API from "../services/api";
 import "./Profile.css";
 
 function Profile() {
-
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
-
   const [oldPassword, setOldPassword] = useState("");
-
   const [newPassword, setNewPassword] = useState("");
+  const [profileError, setProfileError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     fetchProfile();
@@ -19,166 +18,86 @@ function Profile() {
 
   const fetchProfile = async () => {
     try {
-
-      const token =
-        localStorage.getItem("token");
-
-      const response =
-        await axios.get(
-          "https://collect-dd4h.onrender.com/profile/",
-          {
-            headers: {
-              Authorization:
-                `Bearer ${token}`
-            }
-          }
-        );
-
+      // ✅ Use shared API instance (token attached automatically)
+      const response = await API.get("/profile/");
       setEmail(response.data.email);
-
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch profile:", error);
     }
   };
 
   const updateProfile = async () => {
+    setProfileError("");
     try {
-
-      const token =
-        localStorage.getItem("token");
-
-      const response =
-        await axios.put(
-          "https://collect-dd4h.onrender.com/profile/",
-          {
-            email
-          },
-          {
-            headers: {
-              Authorization:
-                `Bearer ${token}`
-            }
-          }
-        );
-
-      alert(response.data.message);
-
+      const response = await API.put("/profile/", { email });
+      alert(response.data.message || "Profile updated");
     } catch (error) {
-
-      console.log(error);
-
-      alert("Update Failed");
+      const detail = error.response?.data?.detail || "Update failed";
+      setProfileError(detail);
     }
   };
 
   const changePassword = async () => {
+    setPasswordError("");
     try {
-
-      const token =
-        localStorage.getItem("token");
-
-      const response =
-        await axios.put(
-          "https://collect-dd4h.onrender.com/profile/change-password",
-          {
-            old_password: oldPassword,
-            new_password: newPassword
-          },
-          {
-            headers: {
-              Authorization:
-                `Bearer ${token}`
-            }
-          }
-        );
-
-      alert(response.data.message);
-
+      const response = await API.put("/profile/change-password", {
+        old_password: oldPassword,
+        new_password: newPassword,
+      });
+      alert(response.data.message || "Password changed");
       setOldPassword("");
       setNewPassword("");
-
     } catch (error) {
-
-      console.log(error);
-
-      alert(
-        error.response?.data?.detail ||
-        "Password Change Failed"
-      );
+      const detail = error.response?.data?.detail || "Password change failed";
+      setPasswordError(detail);
     }
   };
 
-  // =========================
-  // LOGOUT
-  // =========================
   const logout = () => {
-
     localStorage.removeItem("token");
-
-    alert("Logged Out Successfully");
-
+    localStorage.removeItem("user");
     navigate("/login");
   };
 
   return (
     <div className="profile-page">
-
       <h1>My Profile</h1>
 
       <div className="profile-card">
-
         <h3>Email</h3>
-
         <input
           type="email"
           value={email}
-          onChange={(e) =>
-            setEmail(e.target.value)
-          }
+          onChange={(e) => setEmail(e.target.value)}
         />
-
-        <button
-          onClick={updateProfile}
-        >
-          Update Profile
-        </button>
-
+        {profileError && (
+          <p style={{ color: "#e03333", fontSize: "13px" }}>{profileError}</p>
+        )}
+        <button onClick={updateProfile}>Update Profile</button>
       </div>
 
       <div className="profile-card">
-
         <h3>Change Password</h3>
-
         <input
           type="password"
-          placeholder="Old Password"
+          placeholder="Current Password"
           value={oldPassword}
-          onChange={(e) =>
-            setOldPassword(e.target.value)
-          }
+          onChange={(e) => setOldPassword(e.target.value)}
         />
-
         <input
           type="password"
           placeholder="New Password"
           value={newPassword}
-          onChange={(e) =>
-            setNewPassword(e.target.value)
-          }
+          onChange={(e) => setNewPassword(e.target.value)}
         />
-
-        <button
-          onClick={changePassword}
-        >
-          Change Password
-        </button>
-
+        {passwordError && (
+          <p style={{ color: "#e03333", fontSize: "13px" }}>{passwordError}</p>
+        )}
+        <button onClick={changePassword}>Change Password</button>
       </div>
 
       <div className="profile-card">
-
         <h3>Account</h3>
-
         <button
           onClick={logout}
           style={{
@@ -187,14 +106,12 @@ function Profile() {
             padding: "10px",
             border: "none",
             borderRadius: "5px",
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           Logout
         </button>
-
       </div>
-
     </div>
   );
 }

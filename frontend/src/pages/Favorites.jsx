@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../services/api";
 
 function Favorites() {
   const [favorites, setFavorites] = useState([]);
@@ -10,46 +10,20 @@ function Favorites() {
 
   const fetchFavorites = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const response = await axios.get(
-        "https://collect-dd4h.onrender.com/favorites/",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setFavorites(response.data.favorites);
+      // ✅ Use shared API instance (token attached automatically)
+      const response = await API.get("/favorites/");
+      setFavorites(response.data.favorites || []);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch favorites:", error);
     }
   };
 
   const removeFavorite = async (id) => {
     try {
-      const token = localStorage.getItem("token");
-
-      await axios.delete(
-        `https://collect-dd4h.onrender.com/favorites/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      alert("Movie removed from favorites");
-
-      setFavorites(
-        favorites.filter(
-          (movie) => movie.id !== id
-        )
-      );
-
+      await API.delete(`/favorites/${id}`);
+      setFavorites(favorites.filter((movie) => movie.id !== id));
     } catch (error) {
-      console.log(error);
+      console.error("Failed to remove favorite:", error);
       alert("Failed to remove movie");
     }
   };
@@ -61,16 +35,12 @@ function Favorites() {
       {favorites.length === 0 ? (
         <p>No favorite movies yet.</p>
       ) : (
-        <div className="movie-grid">
+        <div className="movies-grid">
           {favorites.map((movie) => (
-            <div
-              className="movie-card"
-              key={movie.id}
-            >
+            <div className="movie-card" key={movie.id}>
               <img
                 src={
-                  movie.poster &&
-                  movie.poster !== "N/A"
+                  movie.poster && movie.poster !== "N/A"
                     ? movie.poster
                     : "https://via.placeholder.com/300x450?text=No+Image"
                 }
@@ -79,20 +49,13 @@ function Favorites() {
 
               <div className="movie-info">
                 <h3>{movie.movie_title}</h3>
-
-                <p>
-                  {movie.genre || "Movie"}
-                </p>
-
+                <p>{movie.genre || "Movie"}</p>
                 <button
                   className="remove-btn"
-                  onClick={() =>
-                    removeFavorite(movie.id)
-                  }
+                  onClick={() => removeFavorite(movie.id)}
                 >
                   ❌ Remove
                 </button>
-
               </div>
             </div>
           ))}

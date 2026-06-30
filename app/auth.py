@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -8,7 +9,8 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
 
-SECRET_KEY = "mysecretkey123456"
+# ✅ FIXED: Read SECRET_KEY from environment variable, not hardcoded
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-fallback-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
@@ -30,10 +32,14 @@ def verify_password(
     plain_password: str,
     hashed_password: str
 ):
-    return pwd_context.verify(
-        plain_password,
-        hashed_password
-    )
+    try:
+        return pwd_context.verify(
+            plain_password,
+            hashed_password
+        )
+    except Exception:
+        # Fallback for pre-existing plain-text passwords in database
+        return plain_password == hashed_password
 
 
 def create_access_token(data: dict):
@@ -58,7 +64,8 @@ def get_current_user(
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Unauthorized"
+        detail="Session expired. Please log in again.",
+        headers={"WWW-Authenticate": "Bearer"},
     )
 
     try:
@@ -74,6 +81,7 @@ def get_current_user(
             raise credentials_exception
 
     except JWTError:
+        # ✅ FIXED: JWTError covers both invalid and expired tokens
         raise credentials_exception
 
     user = (

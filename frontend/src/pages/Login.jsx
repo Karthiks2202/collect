@@ -1,73 +1,53 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { Link } from "react-router-dom";
+import API from "../services/api";
 import "./Auth.css";
 
 function Login() {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
-
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
     try {
-
-      // Create FormData
+      // Send as form data (required by OAuth2PasswordBearer)
       const formData = new FormData();
       formData.append("username", email);
       formData.append("password", password);
 
-      // Login API
-      const response = await axios.post(
-        "https://collect-dd4h.onrender.com/auth/login",
-        formData
-      );
+      // ✅ Use shared API instance (no hardcoded URL)
+      const response = await API.post("/auth/login", formData);
 
-      console.log("LOGIN RESPONSE:", response.data);
+      // Save token and user
+      localStorage.setItem("token", response.data.access_token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
 
-      // Save JWT Token
-     localStorage.setItem(
-  "token",
-  response.data.access_token
-);
-
-localStorage.setItem(
-  "user",
-  JSON.stringify(response.data.user)
-);
-
-      // Save User
-      localStorage.setItem(
-        "user",
-        JSON.stringify(response.data.user)
-      );
-
-      alert("Login Successful");
-
-      // Redirect
+      // Redirect to main app
       window.location.href = "/";
 
-    } catch (error) {
-
-      console.log(error);
-
-      alert("Invalid credentials");
-
+    } catch (err) {
+      const detail = err.response?.data?.detail || "Invalid credentials";
+      setError(detail);
+    } finally {
+      setLoading(false);
     }
-
   };
 
   return (
-
     <div className="auth-container">
-
-      <form
-        className="auth-form"
-        onSubmit={handleLogin}
-      >
-
+      <form className="auth-form" onSubmit={handleLogin}>
         <h1>Login</h1>
+
+        {error && (
+          <p style={{ color: "#e03333", fontSize: "14px", margin: 0, textAlign: "center" }}>
+            {error}
+          </p>
+        )}
 
         <input
           type="email"
@@ -85,14 +65,16 @@ localStorage.setItem(
           required
         />
 
-        <button type="submit">
-          Login
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
         </button>
 
+        <p className="auth-switch">
+          Don't have an account?{" "}
+          <Link to="/register">Register here</Link>
+        </p>
       </form>
-
     </div>
-
   );
 }
 

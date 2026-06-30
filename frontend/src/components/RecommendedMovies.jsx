@@ -3,7 +3,7 @@ import React, {
   useState
 } from "react";
 
-import axios from "axios";
+import API from "../services/api";
 
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
@@ -23,36 +23,15 @@ function RecommendedMovies() {
 
   // fetch recommendation API
   const fetchRecommendations = async () => {
-
     try {
-
-      const token =
-        localStorage.getItem("token");
-
-      const response = await axios.get(
-        "https://collect-dd4h.onrender.com/recommendations",
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
-
-      setMovies(
-        response.data.recommended_movies
-      );
-
+      // ✅ Use shared API instance (no hardcoded URL, token auto-attached)
+      const response = await API.get("/recommendations");
+      setMovies(response.data.recommended_movies || []);
     } catch (error) {
-
-      console.log(error);
-
+      console.error("Recommendations fetch failed:", error);
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
   useEffect(() => {
