@@ -23,12 +23,27 @@ class ViewedMovie(Base):
         nullable=False
     )
 
+    movie_id = Column(
+        String,
+        nullable=False
+    )
+
     movie_title = Column(
         String(255),
         nullable=False
     )
 
     genre = Column(String(100))
+
+    poster = Column(
+        String,
+        nullable=True
+    )
+
+    imdb_rating = Column(
+        String,
+        nullable=True
+    )
 
     viewed_at = Column(
         DateTime(timezone=True),
@@ -38,4 +53,4 @@ class ViewedMovie(Base):
     user = relationship(
         "User",
         back_populates="viewed_movies"
-    )
+    )

@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import API from "../services/api";
 
-import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
 import SearchBar from "../components/SearchBar";
 import MovieCard from "../components/MovieCard";
 
@@ -68,13 +66,8 @@ function Home() {
   }, []);
 
   return (
-    <div className="app-layout">
-      <Sidebar />
-
-      <div className="main-content">
-        <Navbar />
-
-        <SearchBar onSearch={handleSearch} />
+    <>
+      <SearchBar onSearch={handleSearch} />
 
         <h1 className="section-title">Search Results</h1>
 
@@ -123,8 +116,7 @@ function Home() {
             <p>No recommendations yet</p>
           )}
         </div>
-      </div>
-    </div>
+      </>
   );
 }
 

@@ -21,10 +21,14 @@ import Collections from "./pages/Collections";
 import CollectionDetails from "./pages/CollectionDetails";
 import Notifications from "./pages/Notifications";
 import ComparePage from "./pages/ComparePage";
+import WatchedHistory from "./pages/WatchedHistory";
 
 // Route Guards
 import ProtectedRoute from "./router";
 import AdminRoute from "./components/AdminRoute";
+
+// Layout
+import Layout from "./components/Layout";
 
 // Context
 import { CompareProvider } from "./context/CompareContext";
@@ -45,7 +49,9 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <Home />
+                <Layout>
+                  <Home />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -55,7 +61,9 @@ function App() {
             path="/compare"
             element={
               <ProtectedRoute>
-                <ComparePage />
+                <Layout>
+                  <ComparePage />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -65,7 +73,9 @@ function App() {
             path="/favorites"
             element={
               <ProtectedRoute>
-                <Favorites />
+                <Layout>
+                  <Favorites />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -75,7 +85,9 @@ function App() {
             path="/history"
             element={
               <ProtectedRoute>
-                <History />
+                <Layout>
+                  <History />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -85,7 +97,21 @@ function App() {
             path="/watchlist"
             element={
               <ProtectedRoute>
-                <Watchlist />
+                <Layout>
+                  <Watchlist />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Watched History */}
+          <Route
+            path="/watched"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <WatchedHistory />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -95,7 +121,9 @@ function App() {
             path="/profile"
             element={
               <ProtectedRoute>
-                <Profile />
+                <Layout>
+                  <Profile />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -105,7 +133,9 @@ function App() {
             path="/collections"
             element={
               <ProtectedRoute>
-                <Collections />
+                <Layout>
+                  <Collections />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -115,7 +145,21 @@ function App() {
             path="/collections/:id"
             element={
               <ProtectedRoute>
-                <CollectionDetails />
+                <Layout>
+                  <CollectionDetails />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Notifications */}
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Notifications />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -152,9 +196,6 @@ function App() {
 
           {/* Redirect Unknown Routes */}
           <Route path="*" element={<Navigate to="/" replace />} />
-
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/notifications" element={<Notifications />} />
         </Routes>
 
         {/* Global floating comparison bar */}

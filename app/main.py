@@ -25,7 +25,7 @@ from app.routes import (
     profile,
     collections,
     notification,
-    reviews,
+    watched,
 )
 
 # =========================
@@ -70,6 +70,7 @@ app.include_router(reviews.router)
 app.include_router(profile.router)
 app.include_router(collections.router)
 app.include_router(notification.router)
+app.include_router(watched.router)
 
 # =========================
 # ADMIN ROUTES

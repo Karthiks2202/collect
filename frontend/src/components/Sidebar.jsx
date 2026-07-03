@@ -8,6 +8,7 @@ function Sidebar() {
       <Link to="/favorites">❤️ Favorites</Link>
       <Link to="/history">🕒 History</Link>
       <Link to="/watchlist">📺Watchlist</Link>
+      <Link to="/watched">👁️ Watched</Link>
       <Link to="/collections">📁Collections</Link>
       <Link to="/profile">👤 Profile</Link>
     </div>

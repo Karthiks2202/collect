@@ -14,9 +14,17 @@ function MovieCard({ movie }) {
   const movieId = movie.imdbID || movie.movie_id || movie.title;
   const isSelected = isMovieSelected(movieId);
 
+  const movieTitle = movie.title || movie.movie_title || "Unknown Title";
+  const moviePoster = movie.poster || movie.poster_path || "";
+  const movieGenre = movie.genre || "";
+
+  const [isWatched, setIsWatched] = useState(false);
+  const [inWatchlist, setInWatchlist] = useState(false);
+
   useEffect(() => {
     loadCollections();
-  }, []);
+    checkStatus();
+  }, [movieId]);
 
   const loadCollections = async () => {
     try {
@@ -24,6 +32,17 @@ function MovieCard({ movie }) {
       setCollections(data);
     } catch (error) {
       console.error("Failed to load collections:", error);
+    }
+  };
+
+  const checkStatus = async () => {
+    if (!movieId) return;
+    try {
+      const response = await API.get(`/watched/status/${movieId}`);
+      setIsWatched(response.data.watched);
+      setInWatchlist(response.data.watchlist);
+    } catch (error) {
+      console.warn("Failed to fetch watched/watchlist status", error);
     }
   };
 
@@ -50,18 +69,48 @@ function MovieCard({ movie }) {
   const addToWatchlist = async () => {
     try {
       const watchlistData = {
-        movie_id: movieId,
-        movie_title: movie.title,
-        genre: movie.genre,
-        poster: movie.poster,
+        movie_id: String(movieId),
+        movie_title: movieTitle,
+        genre: movieGenre,
+        poster: moviePoster,
       };
 
       // ✅ Use shared API instance
       const response = await API.post("/watchlist/", watchlistData);
+      setInWatchlist(true);
       alert(response.data.message || "Added to Watchlist 📺");
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.detail || "Watchlist failed ❌");
+    }
+  };
+
+  // WATCHED HISTORY
+  const toggleWatched = async () => {
+    try {
+      if (isWatched) {
+        await API.delete(`/watched/${movieId}`);
+        setIsWatched(false);
+        // If we are toggling in watchlist view, we might want to refresh.
+        // Let's check status to sync
+        await checkStatus();
+        alert("Removed from Watched History 👁️");
+      } else {
+        const watchedData = {
+          movie_id: String(movieId),
+          movie_title: movieTitle,
+          genre: movieGenre,
+          poster: moviePoster,
+          imdb_rating: movie.imdb_rating || movie.rating || "N/A"
+        };
+        await API.post("/watched/", watchedData);
+        setIsWatched(true);
+        setInWatchlist(false); // automatically removed from watchlist
+        alert("Marked as Watched 👁️");
+      }
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.detail || "Action failed ❌");
     }
   };
 
@@ -133,26 +182,66 @@ function MovieCard({ movie }) {
     } else {
       addMovieToCompare({
         id: movieId,
-        title: movie.title,
-        poster: movie.poster,
+        title: movieTitle,
+        poster: moviePoster,
       });
     }
   };
 
   return (
-    <div className="movie-card">
+    <div className="movie-card" style={{ position: "relative" }}>
+      {isWatched && (
+        <span
+          className="watched-badge"
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            backgroundColor: "#10b981",
+            color: "white",
+            padding: "4px 8px",
+            borderRadius: "12px",
+            fontSize: "12px",
+            fontWeight: "bold",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.3)",
+            zIndex: 2
+          }}
+        >
+          ✓ Watched
+        </span>
+      )}
+      {inWatchlist && (
+        <span
+          className="watchlist-badge"
+          style={{
+            position: "absolute",
+            top: "10px",
+            left: "10px",
+            backgroundColor: "#3b82f6",
+            color: "white",
+            padding: "4px 8px",
+            borderRadius: "12px",
+            fontSize: "12px",
+            fontWeight: "bold",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.3)",
+            zIndex: 2
+          }}
+        >
+          📺 Watchlist
+        </span>
+      )}
       <img
         src={
-          movie.poster && movie.poster !== "N/A"
-            ? movie.poster
+          moviePoster && moviePoster !== "N/A"
+            ? moviePoster
             : "https://via.placeholder.com/300x450?text=No+Image"
         }
-        alt={movie.title}
+        alt={movieTitle}
       />
 
       <div className="movie-info">
-        <h3>{movie.title}</h3>
-        <p>{movie.genre}</p>
+        <h3>{movieTitle}</h3>
+        <p>{movieGenre}</p>
         <p>{movie.reason}</p>
 
         <button className="fav-btn" onClick={addToFavorites}>
@@ -161,6 +250,31 @@ function MovieCard({ movie }) {
 
         <button className="watch-btn" onClick={addToWatchlist}>
           📺 Watchlist
+        </button>
+
+        <button
+          className="watched-btn"
+          onClick={toggleWatched}
+          style={{
+            backgroundColor: isWatched ? "#ef4444" : "#10b981",
+            color: "white",
+            width: "100%",
+            padding: "12px",
+            border: "none",
+            borderRadius: "10px",
+            cursor: "pointer",
+            marginTop: "8px",
+            fontWeight: "600",
+            transition: "0.3s"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = "0.85";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = "1.0";
+          }}
+        >
+          {isWatched ? "❌ Remove Watched" : "👁️ Mark Watched"}
         </button>
 
         <button className="review-btn" onClick={addReview}>
