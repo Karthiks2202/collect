@@ -1,0 +1,105 @@
+/* ════════════════════════════════════════════════════════════
+   GLOBAL TOAST NOTIFICATIONS
+   ════════════════════════════════════════════════════════════ */
+
+.toast-container {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+  pointer-events: none;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 18px;
+  border-radius: 10px;
+  backdrop-filter: blur(16px);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  max-width: 360px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  animation: toastIn 0.3s cubic-bezier(0.21, 1.02, 0.73, 1) both;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+}
+
+.toast--exit {
+  animation: toastOut 0.35s ease forwards;
+}
+
+.toast--success {
+  background: rgba(20, 50, 35, 0.92);
+  color: #4ff79e;
+  border-color: rgba(79, 247, 158, 0.25);
+}
+
+.toast--error {
+  background: rgba(50, 15, 15, 0.92);
+  color: #f7564f;
+  border-color: rgba(247, 86, 79, 0.25);
+}
+
+.toast--info {
+  background: rgba(15, 25, 55, 0.92);
+  color: #4f8ef7;
+  border-color: rgba(79, 142, 247, 0.25);
+}
+
+.toast--warning {
+  background: rgba(45, 35, 10, 0.92);
+  color: #f7c44f;
+  border-color: rgba(247, 196, 79, 0.25);
+}
+
+.toast-icon {
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.toast-message {
+  line-height: 1.4;
+  text-align: left;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toastOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+  }
+}
+
+@media (max-width: 480px) {
+  .toast-container {
+    bottom: 16px;
+    right: 12px;
+    left: 12px;
+  }
+  .toast {
+    max-width: 100%;
+  }
+}

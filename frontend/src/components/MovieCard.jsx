@@ -10,6 +10,8 @@ function MovieCard({ movie }) {
   const [collections, setCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState("");
   const { isMovieSelected, addMovieToCompare, removeMovieFromCompare } = useCompare();
+  const [reviewModal, setReviewModal] = useState(null); // null = closed, [] = list of reviews
+
 
   const movieId = movie.imdbID || movie.movie_id || movie.title;
   const isSelected = isMovieSelected(movieId);
@@ -136,24 +138,14 @@ function MovieCard({ movie }) {
   // VIEW REVIEWS
   const getReviews = async () => {
     try {
-      // ✅ Use shared API instance
       const response = await API.get(`/reviews/${movieId}`);
-
-      if (response.data.reviews.length === 0) {
-        alert("No reviews found");
-        return;
-      }
-
-      const reviewsText = response.data.reviews
-        .map((review) => `⭐ ${review.rating}/5\n${review.review}`)
-        .join("\n\n");
-
-      alert(reviewsText);
+      setReviewModal(response.data.reviews || []);
     } catch (error) {
       console.error(error);
-      alert("Failed to load reviews");
+      setReviewModal([]);
     }
   };
+
 
   // ADD TO COLLECTION
   const addToCollection = async () => {
@@ -190,6 +182,92 @@ function MovieCard({ movie }) {
 
   return (
     <div className="movie-card" style={{ position: "relative" }}>
+
+      {/* ── Review Modal Overlay ── */}
+      {reviewModal !== null && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: "rgba(0,0,0,0.75)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "16px",
+          }}
+          onClick={() => setReviewModal(null)}
+        >
+          <div
+            style={{
+              background: "#1a1f35",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "14px",
+              padding: "28px",
+              maxWidth: "480px",
+              width: "100%",
+              maxHeight: "70vh",
+              overflowY: "auto",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.6)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+              <h3 style={{ margin: 0, color: "#f0f0f5", fontSize: "1.1rem" }}>
+                Reviews for <em style={{ color: "#4f8ef7" }}>{movieTitle}</em>
+              </h3>
+              <button
+                onClick={() => setReviewModal(null)}
+                style={{
+                  background: "rgba(255,255,255,0.08)",
+                  border: "none",
+                  color: "#9fa3b8",
+                  borderRadius: "50%",
+                  width: "32px",
+                  height: "32px",
+                  cursor: "pointer",
+                  fontSize: "1rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >✕</button>
+            </div>
+
+            {reviewModal.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "32px 0", color: "#5c607a" }}>
+                <div style={{ fontSize: "2.5rem", marginBottom: "10px" }}>🎬</div>
+                <p style={{ margin: 0, fontSize: "0.9rem" }}>No reviews yet for this movie.</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                {reviewModal.map((r, i) => (
+                  <div
+                    key={r.id || i}
+                    style={{
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: "10px",
+                      padding: "14px 16px",
+                    }}
+                  >
+                    <div style={{ display: "flex", gap: "4px", marginBottom: "8px" }}>
+                      {[1,2,3,4,5].map((star) => (
+                        <span key={star} style={{ fontSize: "1.1rem", color: star <= r.rating ? "#f7c44f" : "#2e303a" }}>★</span>
+                      ))}
+                      <span style={{ marginLeft: "6px", fontSize: "0.8rem", color: "#9fa3b8" }}>{r.rating}/5</span>
+                    </div>
+                    <p style={{ margin: 0, color: "#d0d3e8", fontSize: "0.9rem", lineHeight: "1.5" }}>
+                      {r.review || <em style={{ color: "#5c607a" }}>No text provided</em>}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {isWatched && (
         <span
           className="watched-badge"

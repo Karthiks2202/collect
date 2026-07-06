@@ -32,12 +32,14 @@ import Layout from "./components/Layout";
 
 // Context
 import { CompareProvider } from "./context/CompareContext";
+import { ToastProvider } from "./context/ToastContext";
 import CompareBar from "./components/CompareBar";
 
 function App() {
   return (
-    <CompareProvider>
-      <BrowserRouter>
+    <ToastProvider>
+      <CompareProvider>
+        <BrowserRouter>
         <Routes>
 
           {/* Public Routes */}
@@ -200,8 +202,9 @@ function App() {
 
         {/* Global floating comparison bar */}
         <CompareBar />
-      </BrowserRouter>
-    </CompareProvider>
+        </BrowserRouter>
+      </CompareProvider>
+    </ToastProvider>
   );
 }
 

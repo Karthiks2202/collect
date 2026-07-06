@@ -43,17 +43,6 @@ function Navbar() {
           )}
         </button>
 
-        <div className="profile">
-
-          <img
-            src="https://i.pravatar.cc/40"
-            alt="profile"
-          />
-
-          <span>John Doe</span>
-
-        </div>
-
       </div>
 
     </div>

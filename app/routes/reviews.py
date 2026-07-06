@@ -63,6 +63,39 @@ def add_review(
     }
 
 
+@router.get("/average/{movie_id}")
+def average_rating(
+    movie_id: str,
+    db: Session = Depends(get_db)
+):
+
+    reviews = (
+        db.query(Review)
+        .filter(
+            Review.movie_id == movie_id
+        )
+        .all()
+    )
+
+    if len(reviews) == 0:
+        return {
+            "average_rating": 0
+        }
+
+    avg = (
+        sum(
+            review.rating
+            for review in reviews
+        )
+        / len(reviews)
+    )
+
+    return {
+        "movie_id": movie_id,
+        "average_rating": round(avg, 1)
+    }
+
+
 @router.get("/{movie_id}")
 def get_reviews(
     movie_id: str,
@@ -79,7 +112,17 @@ def get_reviews(
 
     return {
         "success": True,
-        "reviews": reviews
+        "reviews": [
+            {
+                "id": r.id,
+                "user_id": r.user_id,
+                "movie_id": r.movie_id,
+                "movie_title": r.movie_title,
+                "rating": r.rating,
+                "review": r.review,
+            }
+            for r in reviews
+        ]
     }
 
 
@@ -145,39 +188,6 @@ def delete_review(
     return {
         "success": True,
         "message": "Review deleted"
-    }
-
-
-@router.get("/average/{movie_id}")
-def average_rating(
-    movie_id: str,
-    db: Session = Depends(get_db)
-):
-
-    reviews = (
-        db.query(Review)
-        .filter(
-            Review.movie_id == movie_id
-        )
-        .all()
-    )
-
-    if len(reviews) == 0:
-        return {
-            "average_rating": 0
-        }
-
-    avg = (
-        sum(
-            review.rating
-            for review in reviews
-        )
-        / len(reviews)
-    )
-
-    return {
-        "movie_id": movie_id,
-        "average_rating": round(avg, 1)
     }
 
 
