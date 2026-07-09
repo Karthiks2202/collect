@@ -1,21 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
+import { useToast } from "../context/ToastContext";
 import "./Watchlist.css"; // Reuse the watchlist grids and layouts
 
 function WatchedHistory() {
   const [watchedMovies, setWatchedMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { showToast } = useToast();
 
   // Filters & Sorting
   const [selectedGenre, setSelectedGenre] = useState("");
   const [sortBy, setSortBy] = useState("newest");
 
-  useEffect(() => {
-    fetchWatchedHistory();
-  }, []);
-
-  const fetchWatchedHistory = async () => {
+  const fetchWatchedHistory = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -27,20 +25,27 @@ function WatchedHistory() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const removeFromWatched = async (movieId) => {
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetchWatchedHistory();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchWatchedHistory]);
+
+  const removeFromWatched = useCallback(async (movieId) => {
     try {
       await API.delete(`/watched/${movieId}`);
-      setWatchedMovies(watchedMovies.filter((m) => m.movie_id !== movieId));
-      alert("Removed from Watched History 👁️");
+      setWatchedMovies((prev) => prev.filter((m) => m.movie_id !== movieId));
+      showToast("Removed from Watched History 👁️", "success");
     } catch (err) {
       console.error("Failed to remove watched movie:", err);
-      alert("Failed to remove movie");
+      showToast("Failed to remove movie", "error");
     }
-  };
+  }, [showToast]);
 
-  const moveToWatchlist = async (movie) => {
+  const moveToWatchlist = useCallback(async (movie) => {
     try {
       const watchlistData = {
         movie_id: String(movie.movie_id),
@@ -50,13 +55,14 @@ function WatchedHistory() {
       };
       await API.post("/watchlist/", watchlistData);
       await API.delete(`/watched/${movie.movie_id}`);
-      setWatchedMovies(watchedMovies.filter((m) => m.movie_id !== movie.movie_id));
-      alert(`"${movie.movie_title}" moved back to Watchlist! 📺`);
+      setWatchedMovies((prev) => prev.filter((m) => m.movie_id !== movie.movie_id));
+      showToast(`"${movie.movie_title}" moved back to Watchlist! 📺`, "success");
     } catch (err) {
       console.error("Failed to move back to watchlist:", err);
-      alert("Failed to move movie");
+      showToast("Failed to move movie", "error");
     }
-  };
+  }, [showToast]);
+
 
   // Get unique genres for filter dropdown
   const allGenres = Array.from(

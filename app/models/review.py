@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -20,6 +21,11 @@ class Review(Base):
     rating = Column(Integer)
 
     review = Column(String)
+
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
 
     user = relationship(
         "User",

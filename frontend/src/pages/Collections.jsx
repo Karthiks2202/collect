@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
   getCollections,
@@ -15,20 +15,23 @@ const Collections = () => {
   const [description, setDescription] = useState("");
   const [editingId, setEditingId] = useState(null);
 
-  useEffect(() => {
-    loadCollections();
-  }, []);
-
-  const loadCollections = async () => {
+  const loadCollections = useCallback(async () => {
     try {
       const data = await getCollections();
       setCollections(data);
     } catch (error) {
       console.error(error);
     }
-  };
+  }, []);
 
-  const handleSubmit = async (e) => {
+  useEffect(() => {
+    const t = setTimeout(() => {
+      loadCollections();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [loadCollections]);
+
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
 
     const payload = {
@@ -51,15 +54,15 @@ const Collections = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [name, description, editingId, loadCollections]);
 
-  const handleEdit = (collection) => {
+  const handleEdit = useCallback((collection) => {
     setEditingId(collection.id);
     setName(collection.name);
     setDescription(collection.description || "");
-  };
+  }, []);
 
-  const handleDelete = async (id) => {
+  const handleDelete = useCallback(async (id) => {
     if (!window.confirm("Delete this collection?")) return;
 
     try {
@@ -68,7 +71,7 @@ const Collections = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [loadCollections]);
 
 return (
   <div className="collections-page">

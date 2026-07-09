@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   getCollections,
   addMovieToCollection,
 } from "../services/collectionService";
+import { useToast } from "../context/ToastContext";
 
 const AddToCollection = ({ movie }) => {
+  const { showToast } = useToast();
   const [collections, setCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState("");
 
-  useEffect(() => {
-    loadCollections();
-  }, []);
-
-  const loadCollections = async () => {
+  const loadCollections = useCallback(async () => {
     try {
       const data = await getCollections();
       setCollections(data);
@@ -23,11 +21,18 @@ const AddToCollection = ({ movie }) => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      loadCollections();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [loadCollections]);
 
   const handleAdd = async () => {
     if (!selectedCollection) {
-      alert("Please create a collection first.");
+      showToast("Please create a collection first.", "warning");
       return;
     }
 
@@ -38,10 +43,10 @@ const AddToCollection = ({ movie }) => {
         poster_path: movie.poster_path,
       });
 
-      alert("Movie added successfully!");
+      showToast("Movie added successfully!", "success");
     } catch (error) {
       console.error(error);
-      alert("Unable to add movie.");
+      showToast("Unable to add movie.", "error");
     }
   };
 

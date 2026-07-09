@@ -1,0 +1,528 @@
+/* ─── Dashboard Container & Page Layout ─── */
+.dashboard-page {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+/* ─── Header Section ─── */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 20px;
+}
+
+.dashboard-heading {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.dashboard-subheading {
+  font-size: 15px;
+  color: var(--text);
+  margin: 5px 0 0 0;
+}
+
+.dashboard-refresh-btn {
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dashboard-refresh-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(170, 59, 255, 0.2);
+}
+
+.dashboard-refresh-btn:active {
+  transform: translateY(0);
+}
+
+/* ─── Streak Banner ─── */
+.dashboard-streak-banner {
+  background: linear-gradient(135deg, rgba(170, 59, 255, 0.15) 0%, rgba(79, 142, 247, 0.15) 100%);
+  border: 1px solid var(--accent-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  color: var(--text-h);
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+}
+
+/* ─── Grid System for Stats (3-column desktop -> 2-column tablet -> 1-column mobile) ─── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.stat-card {
+  position: relative;
+  border-radius: 16px;
+  padding: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--border);
+  box-sizing: border-box;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card__icon {
+  font-size: 28px;
+  opacity: 0.85;
+}
+
+.stat-card__value {
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1;
+  font-family: var(--mono);
+}
+
+.stat-card__label {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.stat-card__glow {
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+/* Skeleton Loading State for Stats */
+.stats-loading .stat-card--skeleton {
+  min-height: 140px;
+  background: var(--code-bg);
+  border-color: var(--border);
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* ─── Charts Section ─── */
+.dashboard-charts-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+  width: 100%;
+}
+
+.dashboard-charts-row--single {
+  grid-template-columns: 1fr;
+}
+
+.chart-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.chart-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chart-card__icon {
+  font-size: 20px;
+}
+
+.chart-card__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+  flex-grow: 1;
+  text-align: left;
+}
+
+.most-watched-badge,
+.motivational-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+}
+
+.motivational-badge {
+  background: rgba(79, 142, 247, 0.1);
+  border-color: rgba(79, 142, 247, 0.3);
+  color: #4f8ef7;
+}
+
+/* Recharts Tooltip Styling */
+.chart-tooltip {
+  background: rgba(17, 24, 39, 0.95);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  backdrop-filter: blur(6px);
+}
+
+.chart-tooltip__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 4px 0;
+}
+
+.chart-tooltip__value {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Empty State Styling for Charts */
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  min-height: 200px;
+}
+
+.chart-empty__icon {
+  font-size: 40px;
+  opacity: 0.7;
+}
+
+.chart-empty p {
+  font-size: 14px;
+  color: var(--text);
+  margin: 0;
+}
+
+/* ─── Recent Activity Section ─── */
+.recent-activity-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.recent-activity__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.activity-tabs {
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+
+.activity-tab {
+  background: none;
+  border: none;
+  color: var(--text);
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.activity-tab:hover {
+  background: var(--code-bg);
+  color: var(--text-h);
+}
+
+.activity-tab--active {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+}
+
+.activity-content {
+  min-height: 150px;
+}
+
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.01);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.activity-item:hover {
+  transform: translateX(4px);
+  border-color: var(--accent-border);
+}
+
+.activity-poster {
+  width: 42px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.activity-poster--fallback {
+  background: var(--code-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.activity-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.activity-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.activity-meta {
+  font-size: 13px;
+  color: var(--text);
+  margin: 0;
+}
+
+.activity-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.activity-badge--blue {
+  background: rgba(79, 142, 247, 0.1);
+  color: #4f8ef7;
+}
+
+.activity-badge--red {
+  background: rgba(247, 86, 79, 0.1);
+  color: #f7564f;
+}
+
+.activity-badge--gold {
+  background: rgba(247, 196, 79, 0.1);
+  color: #f7c44f;
+}
+
+.activity-empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.activity-empty span {
+  font-size: 36px;
+  opacity: 0.7;
+}
+
+.activity-empty p {
+  font-size: 14px;
+  color: var(--text);
+  margin: 0;
+}
+
+.activity-empty--large {
+  padding: 60px 20px;
+}
+
+.activity-empty--large h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 10px 0 5px 0;
+}
+
+/* Star Rating component inside Activity item */
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.star-rating__num {
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 500;
+  margin-left: 6px;
+}
+
+/* Skeleton Loading for Activity */
+.activity-item--skeleton {
+  min-height: 84px;
+  background: var(--code-bg);
+  border-color: var(--border);
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* ─── Loading Spinner for Page ─── */
+.dashboard-spinner-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  padding: 100px 20px;
+  flex-grow: 1;
+}
+
+.dashboard-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.dashboard-spinner-text {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 500;
+  margin: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Responsive Styles (Breakpoints) ─── */
+
+/* Tablet View: 2-column stats, stacked charts */
+@media (max-width: 992px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-charts-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile View: 1-column stats, margins reduced, headers stacked */
+@media (max-width: 576px) {
+  .dashboard-page {
+    padding: 15px;
+    gap: 20px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .dashboard-refresh-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 5px;
+  }
+
+  .activity-tab {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .activity-item {
+    padding: 10px;
+  }
+}

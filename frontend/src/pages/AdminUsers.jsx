@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
+import { useToast } from "../context/ToastContext";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
+  const { showToast } = useToast();
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       // ✅ Use shared API instance (no hardcoded URL, token auto-attached)
       const res = await API.get("/admin/users");
@@ -16,18 +14,25 @@ const AdminUsers = () => {
     } catch (err) {
       console.error(err);
     }
-  };
+  }, []);
 
-  const deleteUser = async (id) => {
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetchUsers();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchUsers]);
+
+  const deleteUser = useCallback(async (id) => {
     try {
       await API.delete(`/admin/users/${id}`);
-      setUsers(users.filter((user) => user.id !== id));
-      alert("User deleted successfully");
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+      showToast("User deleted successfully", "success");
     } catch (err) {
       console.error(err);
-      alert("Failed to delete user");
+      showToast("Failed to delete user", "error");
     }
-  };
+  }, [showToast]);
 
   return (
     <div style={{ padding: "20px" }}>

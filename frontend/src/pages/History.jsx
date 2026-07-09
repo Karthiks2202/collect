@@ -1,7 +1,4 @@
-import React, {
-  useEffect,
-  useState
-} from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import API from "../services/api";
 
@@ -10,13 +7,7 @@ function History() {
   const [history, setHistory] =
     useState([]);
 
-  useEffect(() => {
-
-    fetchHistory();
-
-  }, []);
-
-  const fetchHistory = async () => {
+  const fetchHistory = useCallback(async () => {
     try {
       // ✅ Use shared API instance (no hardcoded URL, token auto-attached)
       const response = await API.get("/history");
@@ -24,7 +15,14 @@ function History() {
     } catch (error) {
       console.error("Failed to fetch history:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetchHistory();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchHistory]);
 
   return (
     <div className="page">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import API from "../services/api";
 import { useCompare } from "../context/CompareContext";
@@ -16,15 +16,13 @@ function ComparePage() {
 
   // Determine which movie IDs to compare:
   // Either from the URL query param `?movies=id1,id2,id3` or from the context state.
-  const getMovieIdsToCompare = () => {
+  const movieIds = useMemo(() => {
     const urlMovies = searchParams.get("movies");
     if (urlMovies) {
       return urlMovies.split(",").filter(Boolean);
     }
     return selectedMovies.map((m) => m.id);
-  };
-
-  const movieIds = getMovieIdsToCompare();
+  }, [searchParams, selectedMovies]);
 
   useEffect(() => {
     const fetchComparison = async () => {
@@ -59,7 +57,7 @@ function ComparePage() {
     };
 
     fetchComparison();
-  }, [searchParams, selectedMovies]);
+  }, [searchParams, selectedMovies, movieIds]);
 
   // Determine highest metrics for highlighting
   const getComparisonMetrics = () => {
@@ -239,7 +237,7 @@ function ComparePage() {
                   <div className="detail-label">User Rating</div>
                   <div className="rating-pill-container">
                     <span className="detail-value" style={{ marginRight: "8px" }}>
-                      {movie.avg_rating !== null ? `${movie.avg_rating} / 10` : "No Ratings"}
+                      {movie.avg_rating !== null ? `${movie.avg_rating} / 5` : "No Ratings"}
                     </span>
                     {movie.avg_rating !== null && (
                       <span

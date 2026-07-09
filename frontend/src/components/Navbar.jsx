@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUnreadCount } from "../services/notificationService";
 
@@ -16,12 +16,13 @@ function Navbar() {
   };
 
   useEffect(() => {
-    loadCount();
-
-    // Refresh every 30 seconds
     const interval = setInterval(loadCount, 30000);
+    const id = setTimeout(loadCount, 0);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(id);
+    };
   }, []);
 
   return (

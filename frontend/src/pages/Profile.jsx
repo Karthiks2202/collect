@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import { useToast } from "../context/ToastContext";
@@ -60,35 +60,45 @@ function Profile() {
   const [passwordSaving, setPasswordSaving] = useState(false);
 
   // ── Active tab ───────────────────────────────────────────────────
-  const [activeTab, setActiveTab] = useState("stats"); // stats | genres | password
+  const [activeTab, setActiveTab] = useState("genres"); // stats | genres | password
 
-  useEffect(() => {
-    fetchAll();
-  }, []);
-
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
+    setProfileLoading(true);
+    
+    // 1. Fetch Profile
     try {
-      setProfileLoading(true);
-      const [profileRes, statsRes] = await Promise.all([
-        API.get("/profile/"),
-        API.get("/profile/stats"),
-      ]);
+      const profileRes = await API.get("/profile/");
       setProfile(profileRes.data);
       setEditUsername(profileRes.data.username || "");
       setEditEmail(profileRes.data.email || "");
-      setStats(statsRes.data);
       if (profileRes.data.id) {
         const saved = localStorage.getItem(`avatar_user_${profileRes.data.id}`);
         if (saved) {
           setAvatar(saved);
         }
       }
-    } catch (err) {
-      showToast("Failed to load profile data", "error");
+    } catch {
+      showToast("Failed to load profile details", "error");
     } finally {
       setProfileLoading(false);
     }
-  };
+
+    // 2. Fetch Stats separately
+    try {
+      const statsRes = await API.get("/profile/stats");
+      setStats(statsRes.data);
+    } catch {
+      showToast("Failed to load stats", "error");
+      setStats({}); // set empty object to stop the skeleton loading from staying visible
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetchAll();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchAll]);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];

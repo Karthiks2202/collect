@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
 import AdminLayout from "../components/AdminLayout";
 
@@ -12,11 +12,7 @@ function AdminDashboard() {
 
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const res = await API.get("/admin/stats");
       setStats(res.data);
@@ -25,7 +21,14 @@ function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetchStats();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchStats]);
 
   if (loading) {
     return (

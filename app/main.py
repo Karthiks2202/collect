@@ -1,6 +1,6 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import false
 
 from app.database import Base, engine
 from app import models
@@ -47,12 +47,15 @@ app = FastAPI(title="Movie Backend API")
 # =========================
 # CORS CONFIG
 # =========================
+# Set ALLOWED_ORIGINS on Render as a comma-separated list, e.g.:
+#   https://your-app.vercel.app,http://localhost:5173
+_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:5174")
+allowed_origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "*"
-    ],
-    allow_credentials=False,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

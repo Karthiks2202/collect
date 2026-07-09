@@ -1,17 +1,19 @@
-import React from "react";
+
 import { useNavigate } from "react-router-dom";
 import { useCompare } from "../context/CompareContext";
+import { useToast } from "../context/ToastContext";
 import "../pages/Compare.css";
 
 function CompareBar() {
   const { selectedMovies, removeMovieFromCompare, clearCompare } = useCompare();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   if (selectedMovies.length === 0) return null;
 
   const handleCompareClick = () => {
     if (selectedMovies.length < 2) {
-      alert("Please select at least 2 movies to compare.");
+      showToast("Please select at least 2 movies to compare.", "warning");
       return;
     }
     navigate("/compare");

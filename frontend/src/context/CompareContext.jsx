@@ -1,21 +1,24 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext } from "react";
+import { useToast } from "./ToastContext";
 
+/* eslint-disable react-refresh/only-export-components */
 const CompareContext = createContext();
 
 export const CompareProvider = ({ children }) => {
-  const [selectedMovies, setSelectedMovies] = useState([]);
-
-  // Load from localStorage on mount
-  useEffect(() => {
+  const { showToast } = useToast();
+  
+  // Load from localStorage on initialization (lazy state initialization)
+  const [selectedMovies, setSelectedMovies] = useState(() => {
     const saved = localStorage.getItem("compare_movies");
     if (saved) {
       try {
-        setSelectedMovies(JSON.parse(saved));
+        return JSON.parse(saved);
       } catch (e) {
         console.error("Failed to parse compare_movies from localStorage", e);
       }
     }
-  }, []);
+    return [];
+  });
 
   // Save to localStorage when changed
   const saveCompare = (movies) => {
@@ -31,7 +34,7 @@ export const CompareProvider = ({ children }) => {
 
     // Limit to 3 movies
     if (selectedMovies.length >= 3) {
-      alert("You can compare up to 3 movies at a time.");
+      showToast("You can compare up to 3 movies at a time.", "warning");
       return;
     }
 

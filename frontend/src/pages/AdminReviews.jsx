@@ -1,35 +1,34 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
 import AdminLayout from "../components/AdminLayout";
 
 function AdminReviews() {
   const [reviews, setReviews] = useState([]);
 
-  useEffect(() => {
-    fetchReviews();
-  }, []);
-
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     try {
       const res = await API.get("/admin/reviews");
-
-console.log("Reviews Response:", JSON.stringify(res.data, null, 2));
-console.log("Is Array:", Array.isArray(res.data));
-
-setReviews(res.data.reviews);
+      setReviews(res.data.reviews);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
-  };
+  }, []);
 
-  const deleteReview = async (id) => {
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetchReviews();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchReviews]);
+
+  const deleteReview = useCallback(async (id) => {
     try {
       await API.delete(`/admin/reviews/${id}`);
       fetchReviews();
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
-  };
+  }, [fetchReviews]);
 
   return (
   <AdminLayout>

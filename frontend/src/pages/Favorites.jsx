@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
+import { useToast } from "../context/ToastContext";
 
 function Favorites() {
   const [favorites, setFavorites] = useState([]);
+  const { showToast } = useToast();
 
-  useEffect(() => {
-    fetchFavorites();
-  }, []);
-
-  const fetchFavorites = async () => {
+  const fetchFavorites = useCallback(async () => {
     try {
       // ✅ Use shared API instance (token attached automatically)
       const response = await API.get("/favorites/");
@@ -16,17 +14,25 @@ function Favorites() {
     } catch (error) {
       console.error("Failed to fetch favorites:", error);
     }
-  };
+  }, []);
 
-  const removeFavorite = async (id) => {
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetchFavorites();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchFavorites]);
+
+  const removeFavorite = useCallback(async (id) => {
     try {
       await API.delete(`/favorites/${id}`);
-      setFavorites(favorites.filter((movie) => movie.id !== id));
+      setFavorites((prevFavs) => prevFavs.filter((movie) => movie.id !== id));
+      showToast("Removed from favorites", "success");
     } catch (error) {
       console.error("Failed to remove favorite:", error);
-      alert("Failed to remove movie");
+      showToast("Failed to remove movie", "error");
     }
-  };
+  }, [showToast]);
 
   return (
     <div className="page">

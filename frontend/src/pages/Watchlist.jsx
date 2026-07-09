@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
+import { useToast } from "../context/ToastContext";
 import "./Watchlist.css";
 
 function Watchlist() {
@@ -8,20 +9,13 @@ function Watchlist() {
   const [watchedMovies, setWatchedMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { showToast } = useToast();
 
   // Filters & Sorting for Watched History
   const [selectedGenre, setSelectedGenre] = useState("");
   const [sortBy, setSortBy] = useState("newest");
 
-  useEffect(() => {
-    if (activeTab === "watchlist") {
-      fetchWatchlist();
-    } else {
-      fetchWatched();
-    }
-  }, [activeTab]);
-
-  const fetchWatchlist = async () => {
+  const fetchWatchlist = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -33,9 +27,9 @@ function Watchlist() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchWatched = async () => {
+  const fetchWatched = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -47,19 +41,31 @@ function Watchlist() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const removeFromWatchlist = async (id) => {
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (activeTab === "watchlist") {
+        fetchWatchlist();
+      } else {
+        fetchWatched();
+      }
+    }, 0);
+    return () => clearTimeout(t);
+  }, [activeTab, fetchWatchlist, fetchWatched]);
+
+  const removeFromWatchlist = useCallback(async (id) => {
     try {
       await API.delete(`/watchlist/${id}`);
-      setWatchlistMovies(watchlistMovies.filter((m) => m.id !== id));
+      setWatchlistMovies((prev) => prev.filter((m) => m.id !== id));
+      showToast("Movie removed from watchlist", "success");
     } catch (err) {
       console.error("Failed to remove watchlist movie:", err);
-      alert("Failed to remove movie");
+      showToast("Failed to remove movie", "error");
     }
-  };
+  }, [showToast]);
 
-  const markAsWatched = async (movie) => {
+  const markAsWatched = useCallback(async (movie) => {
     try {
       const watchedData = {
         movie_id: String(movie.movie_id),
@@ -69,25 +75,26 @@ function Watchlist() {
         imdb_rating: "N/A", // Default rating if not available
       };
       await API.post("/watched/", watchedData);
-      setWatchlistMovies(watchlistMovies.filter((m) => m.id !== movie.id));
-      alert(`"${movie.movie_title}" marked as watched!`);
+      setWatchlistMovies((prev) => prev.filter((m) => m.id !== movie.id));
+      showToast(`"${movie.movie_title}" marked as watched!`, "success");
     } catch (err) {
       console.error("Mark watched failed:", err);
-      alert("Failed to mark movie as watched");
+      showToast("Failed to mark movie as watched", "error");
     }
-  };
+  }, [showToast]);
 
-  const removeFromWatched = async (movieId) => {
+  const removeFromWatched = useCallback(async (movieId) => {
     try {
       await API.delete(`/watched/${movieId}`);
-      setWatchedMovies(watchedMovies.filter((m) => m.movie_id !== movieId));
+      setWatchedMovies((prev) => prev.filter((m) => m.movie_id !== movieId));
+      showToast("Movie removed from watched history", "success");
     } catch (err) {
       console.error("Failed to remove watched movie:", err);
-      alert("Failed to remove movie");
+      showToast("Failed to remove movie", "error");
     }
-  };
+  }, [showToast]);
 
-  const moveToWatchlist = async (movie) => {
+  const moveToWatchlist = useCallback(async (movie) => {
     try {
       const watchlistData = {
         movie_id: String(movie.movie_id),
@@ -97,13 +104,13 @@ function Watchlist() {
       };
       await API.post("/watchlist/", watchlistData);
       await API.delete(`/watched/${movie.movie_id}`);
-      setWatchedMovies(watchedMovies.filter((m) => m.movie_id !== movie.movie_id));
-      alert(`"${movie.movie_title}" moved back to Watchlist!`);
+      setWatchedMovies((prev) => prev.filter((m) => m.movie_id !== movie.movie_id));
+      showToast(`"${movie.movie_title}" moved back to Watchlist!`, "success");
     } catch (err) {
       console.error("Failed to move back to watchlist:", err);
-      alert("Failed to move movie");
+      showToast("Failed to move movie", "error");
     }
-  };
+  }, [showToast]);
 
   // Get unique genres from watched history for filtering
   const allGenres = Array.from(

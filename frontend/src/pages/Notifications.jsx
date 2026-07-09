@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import NotificationCard from "../components/NotificationCard";
 
@@ -11,33 +11,31 @@ import {
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
 
-  const loadNotifications = async () => {
+  const loadNotifications = useCallback(async () => {
     try {
       const data = await getNotifications();
       setNotifications(data);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
-  };
-
-  useEffect(() => {
-    loadNotifications();
   }, []);
 
-  const handleRead = async (id) => {
+  useEffect(() => {
+    const t = setTimeout(() => {
+      loadNotifications();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [loadNotifications]);
+
+  const handleRead = useCallback(async (id) => {
     await markAsRead(id);
     loadNotifications();
-  };
+  }, [loadNotifications]);
 
-  const handleDelete = async (id) => {
+  const handleDelete = useCallback(async (id) => {
     await deleteNotification(id);
     loadNotifications();
-  };
-
-  const handleMarkAsRead = async (id) => {
-  await markAsRead(id);
-  fetchNotifications();
-};
+  }, [loadNotifications]);
 
   return (
     <div style={{ padding: 20 }}>

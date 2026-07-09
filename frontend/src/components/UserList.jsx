@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
 
 function UserList() {
   const [users, setUsers] = useState([]);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const res = await API.get("/admin/users");
       setUsers(res.data);
     } catch (err) {
       console.error("Failed to fetch users:", err);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetchUsers();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchUsers]);
 
   return (
     <div style={{ padding: "20px" }}>

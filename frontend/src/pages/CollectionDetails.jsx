@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import {
   getCollection,
@@ -14,20 +14,23 @@ const CollectionDetails = () => {
 
   const [collection, setCollection] = useState(null);
 
-  useEffect(() => {
-    loadCollection();
-  }, []);
-
-  const loadCollection = async () => {
+  const loadCollection = useCallback(async () => {
     try {
       const data = await getCollection(id);
       setCollection(data);
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [id]);
 
-  const handleRemove = async (movieId) => {
+  useEffect(() => {
+    const t = setTimeout(() => {
+      loadCollection();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [loadCollection]);
+
+  const handleRemove = useCallback(async (movieId) => {
     if (!window.confirm("Remove this movie from the collection?")) return;
 
     try {
@@ -36,7 +39,7 @@ const CollectionDetails = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [id, loadCollection]);
 
   if (!collection) {
     return <h2>Loading...</h2>;

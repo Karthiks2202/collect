@@ -5,6 +5,7 @@ from fastapi import (
 )
 
 from sqlalchemy.orm import Session
+from datetime import datetime, timezone
 
 from app.database import get_db
 from app.auth import get_current_user
@@ -50,7 +51,8 @@ def add_review(
         movie_id=review.movie_id,
         movie_title=review.movie_title,
         rating=review.rating,
-        review=review.review
+        review=review.review,
+        created_at=datetime.now(timezone.utc)
     )
 
     db.add(new_review)

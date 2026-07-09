@@ -1,7 +1,4 @@
-import React, {
-  useEffect,
-  useState
-} from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import API from "../services/api";
 
@@ -22,8 +19,9 @@ function RecommendedMovies() {
     useState(true);
 
   // fetch recommendation API
-  const fetchRecommendations = async () => {
+  const fetchRecommendations = useCallback(async () => {
     try {
+      setLoading(true);
       // ✅ Use shared API instance (no hardcoded URL, token auto-attached)
       const response = await API.get("/recommendations");
       setMovies(response.data.recommended_movies || []);
@@ -32,11 +30,14 @@ function RecommendedMovies() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchRecommendations();
-  }, []);
+    const t = setTimeout(() => {
+      fetchRecommendations();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchRecommendations]);
 
   return (
     <div className="layout">

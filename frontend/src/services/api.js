@@ -2,7 +2,7 @@ import axios from "axios";
 
 // ✅ Read base URL from environment variable (set in frontend/.env)
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "https://collect-dd4h.onrender.com",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
 // ✅ Automatically attach JWT token to every request

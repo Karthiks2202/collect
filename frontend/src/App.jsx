@@ -1,4 +1,4 @@
-import React from "react";
+
 import {
   BrowserRouter,
   Routes,
@@ -22,6 +22,7 @@ import CollectionDetails from "./pages/CollectionDetails";
 import Notifications from "./pages/Notifications";
 import ComparePage from "./pages/ComparePage";
 import WatchedHistory from "./pages/WatchedHistory";
+import Dashboard from "./pages/Dashboard";
 
 // Route Guards
 import ProtectedRoute from "./router";
@@ -125,6 +126,18 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Profile />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Dashboard */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Dashboard />
                 </Layout>
               </ProtectedRoute>
             }

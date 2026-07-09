@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
 import { useToast } from "../context/ToastContext";
 
@@ -34,21 +34,24 @@ function GenrePreferences() {
   const [adding, setAdding] = useState(false);
   const [removingId, setRemovingId] = useState(null);
 
-  useEffect(() => {
-    fetchPreferences();
-  }, []);
-
-  const fetchPreferences = async () => {
+  const fetchPreferences = useCallback(async () => {
     try {
       setLoading(true);
       const res = await API.get("/preferences/");
       setPreferences(res.data.data || []);
-    } catch (err) {
+    } catch {
       showToast("Failed to load genre preferences", "error");
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetchPreferences();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [fetchPreferences]);
 
   const handleAdd = async () => {
     if (!selectedGenre.trim()) {

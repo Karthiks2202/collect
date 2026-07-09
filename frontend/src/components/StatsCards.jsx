@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const STAT_META = [
   {
     key: "watched_count",
     label: "Movies Watched",
     icon: "🎬",
-    color: "var(--stat-blue)",
     gradient: "linear-gradient(135deg, #1a1f3a 0%, #0d1b2a 100%)",
     accent: "#4f8ef7",
   },
@@ -13,7 +12,6 @@ const STAT_META = [
     key: "favorites_count",
     label: "Favourites",
     icon: "❤️",
-    color: "var(--stat-red)",
     gradient: "linear-gradient(135deg, #2a1a1a 0%, #1e0d0d 100%)",
     accent: "#f7564f",
   },
@@ -21,7 +19,6 @@ const STAT_META = [
     key: "watchlist_count",
     label: "Watchlist",
     icon: "📋",
-    color: "var(--stat-green)",
     gradient: "linear-gradient(135deg, #1a2a1a 0%, #0d1e0d 100%)",
     accent: "#4ff79e",
   },
@@ -29,9 +26,22 @@ const STAT_META = [
     key: "reviews_count",
     label: "Reviews Written",
     icon: "✍️",
-    color: "var(--stat-gold)",
     gradient: "linear-gradient(135deg, #2a261a 0%, #1e1a0d 100%)",
     accent: "#f7c44f",
+  },
+  {
+    key: "collections_count",
+    label: "Collections",
+    icon: "📁",
+    gradient: "linear-gradient(135deg, #1e1a2a 0%, #130d1e 100%)",
+    accent: "#c084fc",
+  },
+  {
+    key: "total_searches",
+    label: "Total Searches",
+    icon: "🔍",
+    gradient: "linear-gradient(135deg, #1a2a2a 0%, #0d1e1e 100%)",
+    accent: "#4fc8f7",
   },
 ];
 
@@ -41,8 +51,8 @@ function useCountUp(target, duration = 1200) {
 
   useEffect(() => {
     if (target === 0) {
-      setCount(0);
-      return;
+      const id = setTimeout(() => setCount(0), 0);
+      return () => clearTimeout(id);
     }
     const start = performance.now();
     const animate = (now) => {

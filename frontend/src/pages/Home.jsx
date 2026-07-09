@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import API from "../services/api";
 
@@ -49,20 +49,22 @@ function Home() {
     }
   };
 
-  // =========================
-  // LOAD RECOMMENDATIONS
-  // =========================
-  const fetchRecommendations = async () => {
-    try {
-      const response = await API.get("/recommendations/");
-      setRecommendedMovies(response.data.recommended_movies || []);
-    } catch (error) {
-      console.error("Recommendations error:", error);
-    }
-  };
-
   useEffect(() => {
+    let active = true;
+    const fetchRecommendations = async () => {
+      try {
+        const response = await API.get("/recommendations/");
+        if (active) {
+          setRecommendedMovies(response.data.recommended_movies || []);
+        }
+      } catch (error) {
+        console.error("Recommendations error:", error);
+      }
+    };
     fetchRecommendations();
+    return () => {
+      active = false;
+    };
   }, []);
 
   return (

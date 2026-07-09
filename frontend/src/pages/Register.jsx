@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
+import { useToast } from "../context/ToastContext";
 import "./Auth.css";
 
 function Register() {
@@ -9,6 +10,8 @@ function Register() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
+  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -24,8 +27,8 @@ function Register() {
       // ✅ Use shared API instance (no hardcoded URL)
       await API.post("/auth/register", formData);
 
-      alert("Registration Successful! Please log in.");
-      window.location.href = "/login";
+      showToast("Registration Successful! Please log in.", "success");
+      navigate("/login");
 
     } catch (err) {
       const detail = err.response?.data?.detail || "Registration failed. Please try again.";

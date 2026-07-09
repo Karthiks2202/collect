@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
 import "./Toast.css";
 
-
+/* eslint-disable react-refresh/only-export-components */
 const ToastContext = createContext(null);
 
 export function useToast() {

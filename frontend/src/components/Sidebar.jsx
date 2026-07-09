@@ -5,6 +5,7 @@ function Sidebar() {
   return (
     <div className="sidebar">
       <Link to="/">🏠 Home</Link>
+      <Link to="/dashboard">📊 Dashboard</Link>
       <Link to="/favorites">❤️ Favorites</Link>
       <Link to="/history">🕒 History</Link>
       <Link to="/watchlist">📺Watchlist</Link>
