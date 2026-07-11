@@ -29,3 +29,59 @@
   border: none;
   cursor: pointer;
 }
+
+@media (max-width: 768px) {
+  .watchlist-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .watchlist-card img {
+    height: 260px;
+  }
+
+  .watchlist-info {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .watchlist-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .watchlist-card img {
+    height: 300px;
+  }
+}
+
+/* Page-level responsive overrides for inline-styled elements */
+@media (max-width: 640px) {
+  .watchlist-page h1 {
+    font-size: 24px !important;
+  }
+
+  .watchlist-tabs {
+    gap: 8px !important;
+  }
+
+  .watchlist-tabs button {
+    font-size: 15px !important;
+    padding: 6px 10px !important;
+  }
+
+  .filters-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .filters-bar > div {
+    width: 100%;
+  }
+
+  .watchlist-info h3 {
+    font-size: 16px !important;
+  }
+}

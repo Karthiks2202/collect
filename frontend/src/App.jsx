@@ -19,6 +19,7 @@ import AdminUsers from "./pages/AdminUsers";
 import AdminReviews from "./pages/AdminReviews";
 import Collections from "./pages/Collections";
 import CollectionDetails from "./pages/CollectionDetails";
+import PublicCollections from "./pages/PublicCollections";
 import Notifications from "./pages/Notifications";
 import ComparePage from "./pages/ComparePage";
 import WatchedHistory from "./pages/WatchedHistory";
@@ -150,6 +151,18 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Collections />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Public Collections */}
+          <Route
+            path="/collections/public"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <PublicCollections />
                 </Layout>
               </ProtectedRoute>
             }

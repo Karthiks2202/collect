@@ -42,3 +42,15 @@ export const removeMovieFromCollection = async (collectionId, movieId) => {
   const response = await API.delete(`/collections/${collectionId}/movies/${movieId}`);
   return response.data;
 };
+
+// Get public collections
+export const getPublicCollections = async () => {
+  const response = await API.get("/collections/public");
+  return response.data;
+};
+
+// Search collections
+export const searchCollections = async (query) => {
+  const response = await API.get(`/collections/search?q=${encodeURIComponent(query)}`);
+  return response.data;
+};

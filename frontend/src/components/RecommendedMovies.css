@@ -204,3 +204,95 @@ body {
   text-align: center;
   margin-top: 100px;
 }
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid #222;
+    padding: 15px 20px;
+  }
+
+  .sidebar ul {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .sidebar li {
+    padding: 10px 14px;
+    margin-bottom: 0;
+    white-space: nowrap;
+    font-size: 14px;
+  }
+
+  .main-section {
+    padding: 20px;
+  }
+
+  .navbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+  }
+
+  .searchbar {
+    flex-direction: column;
+  }
+
+  .searchbar button {
+    width: 100%;
+  }
+
+  .movie-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .movie-card img {
+    height: 240px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-section {
+    padding: 16px;
+  }
+
+  .logo {
+    font-size: 26px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .movie-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .movie-card img {
+    height: 280px;
+  }
+}

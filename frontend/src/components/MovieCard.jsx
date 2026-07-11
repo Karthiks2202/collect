@@ -2,14 +2,17 @@ import { useEffect, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import API from "../services/api";
 import { useCompare } from "../context/CompareContext";
+import { useToast } from "../context/ToastContext";
 import {
   getCollections,
   addMovieToCollection,
 } from "../services/collectionService";
 
 function MovieCard({ movie }) {
+  const { showToast } = useToast();
   const [collections, setCollections] = useState([]);
-  const [selectedCollection, setSelectedCollection] = useState("");
+  const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
+  const [selectedCollections, setSelectedCollections] = useState([]);
   const { isMovieSelected, addMovieToCompare, removeMovieFromCompare } = useCompare();
   const [reviewModal, setReviewModal] = useState(null); // null = closed, [] = list of reviews
   const [reviewsLoading, setReviewsLoading] = useState(false);
@@ -166,23 +169,35 @@ function MovieCard({ movie }) {
 
   // ADD TO COLLECTION
   const addToCollection = async () => {
-    if (!selectedCollection) {
-      alert("Please select a collection");
+    if (selectedCollections.length === 0) {
+      showToast("Please select at least one collection 📁", "warning");
       return;
     }
 
     try {
-      await addMovieToCollection(selectedCollection, {
-        movie_id: String(movieId),
-        movie_title: movie.title,
-        poster_path: movie.poster,
-      });
-
-      alert("Movie added to collection 📁");
+      const promises = selectedCollections.map((colId) =>
+        addMovieToCollection(colId, {
+          movie_id: String(movieId),
+          movie_title: movieTitle,
+          poster_path: moviePoster,
+        })
+      );
+      await Promise.all(promises);
+      showToast(`Added movie to ${selectedCollections.length} collection(s) successfully! 🎉`, "success");
+      setIsCollectionModalOpen(false);
+      setSelectedCollections([]);
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.detail || "Failed to add movie");
+      showToast(error.response?.data?.detail || "Failed to add movie to some collections ❌", "error");
     }
+  };
+
+  const handleCollectionCheckboxChange = (collectionId) => {
+    setSelectedCollections((prev) =>
+      prev.includes(collectionId)
+        ? prev.filter((id) => id !== collectionId)
+        : [...prev, collectionId]
+    );
   };
 
   const handleCompareToggle = () => {
@@ -443,12 +458,138 @@ function MovieCard({ movie }) {
     document.body
   ) : null;
 
+  const addCollectionPortal = isCollectionModalOpen ? createPortal(
+    <div
+      style={{
+        position: "fixed",
+        top: 0, left: 0, right: 0, bottom: 0,
+        background: "rgba(15, 23, 42, 0.85)",
+        backdropFilter: "blur(6px)",
+        zIndex: 99999,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "16px",
+        animation: "mcFadeIn 0.18s ease",
+      }}
+      onClick={() => setIsCollectionModalOpen(false)}
+    >
+      <div
+        style={{
+          background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+          border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: "16px",
+          padding: "28px",
+          maxWidth: "420px",
+          width: "100%",
+          boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
+          animation: "mcSlideUp 0.25s cubic-bezier(0.34,1.56,0.64,1)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+          <h3 style={{ margin: 0, color: "#f1f5f9", fontSize: "1.2rem", fontWeight: "700" }}>
+            📁 Add to Collection(s)
+          </h3>
+          <button
+            onClick={() => setIsCollectionModalOpen(false)}
+            style={{
+              background: "none", border: "none", color: "#94a3b8",
+              cursor: "pointer", fontSize: "1.2rem",
+            }}
+          >✕</button>
+        </div>
+
+        <p style={{ color: "#94a3b8", fontSize: "0.9rem", marginBottom: "20px" }}>
+          Select one or more collections to add <strong>{movieTitle}</strong>:
+        </p>
+
+        {collections.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <p style={{ color: "#64748b", margin: "0 0 15px 0" }}>You haven't created any collections yet.</p>
+            <button
+              onClick={() => {
+                setIsCollectionModalOpen(false);
+                window.location.href = "/collections";
+              }}
+              style={{
+                background: "linear-gradient(90deg, #6366f1, #4f46e5)",
+                color: "white", border: "none", padding: "10px 20px",
+                borderRadius: "8px", cursor: "pointer", fontWeight: "600",
+              }}
+            >
+              Create Collection
+            </button>
+          </div>
+        ) : (
+          <div style={{ maxHeight: "240px", overflowY: "auto", marginBottom: "24px", display: "flex", flexDirection: "column", gap: "10px", paddingRight: "5px" }}>
+            {collections.map((col) => (
+              <label
+                key={col.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  background: "rgba(255, 255, 255, 0.03)",
+                  border: "1px solid rgba(255, 255, 255, 0.05)",
+                  borderRadius: "10px",
+                  padding: "12px",
+                  cursor: "pointer",
+                  transition: "background 0.2s",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedCollections.includes(col.id)}
+                  onChange={() => handleCollectionCheckboxChange(col.id)}
+                  style={{ width: "18px", height: "18px", accentColor: "#6366f1", cursor: "pointer" }}
+                />
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span style={{ color: "#f1f5f9", fontWeight: "600", fontSize: "0.95rem" }}>{col.name}</span>
+                  <span style={{ color: "#64748b", fontSize: "0.8rem" }}>{col.movies?.length || 0} movies • {col.visibility}</span>
+                </div>
+              </label>
+            ))}
+          </div>
+        )}
+
+        {collections.length > 0 && (
+          <div style={{ display: "flex", gap: "12px" }}>
+            <button
+              onClick={addToCollection}
+              style={{
+                flex: 1, padding: "12px",
+                background: "linear-gradient(90deg, #6366f1, #4f46e5)",
+                color: "white", border: "none", borderRadius: "10px",
+                fontWeight: "700", cursor: "pointer",
+              }}
+            >
+              Add to Selected
+            </button>
+            <button
+              onClick={() => setIsCollectionModalOpen(false)}
+              style={{
+                padding: "12px 20px", background: "#334155",
+                color: "#f1f5f9", border: "none", borderRadius: "10px",
+                fontWeight: "600", cursor: "pointer",
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body
+  ) : null;
+
   return (
     <div className="movie-card" style={{ position: "relative" }}>
 
       {/* Portals are rendered via createPortal above the return — injected at document.body */}
       {addReviewPortal}
       {viewReviewsPortal}
+      {addCollectionPortal}
 
       {isWatched && (
         <span
@@ -545,19 +686,7 @@ function MovieCard({ movie }) {
           👁 View Reviews
         </button>
 
-        <select
-          value={selectedCollection}
-          onChange={(e) => setSelectedCollection(e.target.value)}
-        >
-          <option value="">Select Collection</option>
-          {collections.map((collection) => (
-            <option key={collection.id} value={collection.id}>
-              {collection.name}
-            </option>
-          ))}
-        </select>
-
-        <button className="collection-btn" onClick={addToCollection}>
+        <button className="collection-btn" onClick={() => setIsCollectionModalOpen(true)}>
           📁 Add to Collection
         </button>
 

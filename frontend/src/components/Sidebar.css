@@ -24,18 +24,3 @@
 .sidebar a.active {
   background: #2563eb;
 }
-
-@media (max-width: 768px) {
-  .sidebar {
-    width: 100%;
-    min-height: auto;
-    flex-direction: row;
-    justify-content: space-around;
-    padding: 10px;
-  }
-
-  .sidebar a {
-    padding: 8px;
-    font-size: 14px;
-  }
-}

@@ -1,174 +1,314 @@
 /* =========================
-   Page Container
-========================= */
+   Collections Page Styles
+   ========================= */
 
 .collections-page {
   max-width: 1200px;
   margin: 40px auto;
-  padding: 20px;
-  color: white;
+  padding: 0 20px;
+  color: #f8fafc;
 }
 
-.collections-page h2 {
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 30px;
-}
-
-/* =========================
-   Create / Edit Form
-========================= */
-
-.collection-form {
+.collections-header {
   display: flex;
-  flex-direction: column;
-  gap: 15px;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 40px;
-  background: #1e293b;
-  padding: 25px;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.collection-form input,
-.collection-form textarea {
-  width: 100%;
-  padding: 14px 16px;
-  border: 2px solid #334155;
-  border-radius: 12px;
-  font-size: 15px;
-  background: #0f172a;
-  color: #f1f5f9;
-  transition: border-color 0.2s;
-}
-
-.collection-form input::placeholder,
-.collection-form textarea::placeholder {
-  color: #64748b;
-}
-
-.collection-form input:focus,
-.collection-form textarea:focus {
-  outline: none;
-  border-color: #3b82f6;
-}
-
-.collection-form textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-.collection-form button {
+.collections-header h2 {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
   background: linear-gradient(90deg, #f59e0b, #ea580c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.collections-header .subtitle {
+  color: #94a3b8;
+  margin: 0;
+  font-size: 16px;
+}
+
+.create-collection-btn {
+  background: linear-gradient(90deg, #6366f1, #4f46e5);
   color: white;
   border: none;
-  padding: 14px;
+  padding: 12px 24px;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+  transition: all 0.2s ease;
 }
 
-.collection-form button:hover {
-  opacity: 0.9;
+.create-collection-btn:hover {
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
 }
 
-/* =========================
-   Collection Grid
-========================= */
+.create-collection-btn:active {
+  transform: translateY(0);
+}
 
+/* Loading State */
+.collections-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  color: #94a3b8;
+}
+
+.collections-loading .spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #6366f1;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  max-width: 500px;
+  margin: 40px auto;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.empty-state h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  color: #94a3b8;
+  margin-bottom: 25px;
+  font-size: 15px;
+}
+
+/* Grid Layout: 4 columns on large screens, 2 columns on medium, 1 on small */
 .collection-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 25px;
 }
 
-/* =========================
-   Collection Card
-========================= */
+@media (max-width: 1024px) {
+  .collection-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
+@media (max-width: 640px) {
+  .collection-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  .collections-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .create-collection-btn {
+    width: 100%;
+  }
+}
+
+/* Collection Card */
 .collection-card {
   background: #1e293b;
-  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 18px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-  transition: transform 0.2s;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 .collection-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
-.collection-card h3 {
-  color: #f8fafc;
-  font-size: 22px;
+.card-cover {
+  position: relative;
+  height: 180px;
+  width: 100%;
+  background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
+  overflow: hidden;
+}
+
+.card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.collection-card:hover .card-cover img {
+  transform: scale(1.05);
+}
+
+.card-cover-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
+.fallback-icon {
+  font-size: 48px;
+  opacity: 0.5;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
+
+.visibility-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
   font-weight: 700;
-  margin-bottom: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
 }
 
-.collection-card p {
+.visibility-badge.public {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+
+.visibility-badge.private {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+.collection-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.collection-body h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #f1f5f9;
+  line-height: 1.3;
+}
+
+.collection-body .description {
   color: #94a3b8;
   font-size: 14px;
   line-height: 1.5;
-  margin-bottom: 6px;
+  margin: 0 0 20px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 42px; /* fallback for non-webkit */
 }
 
-.movie-count {
+.meta-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 15px;
+  margin-bottom: 20px;
+}
+
+.collection-body .movie-count {
   color: #38bdf8;
-  font-weight: 600;
-  margin-top: 8px;
+  font-weight: 700;
 }
 
-/* =========================
-   Card Buttons — all same size
-========================= */
-
+/* Action Buttons */
 .card-buttons {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 8px;
 }
 
-/* Shared base for all three action buttons */
 .view-btn,
 .edit-btn,
 .delete-btn {
   flex: 1;
   padding: 10px 8px;
   border: none;
-  border-radius: 10px;
-  cursor: pointer;
+  border-radius: 8px;
   font-size: 13px;
-  font-weight: 600;
-  text-align: center;
-  text-decoration: none;
+  font-weight: 700;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  transition: opacity 0.2s, transform 0.15s;
-}
-
-.view-btn:hover,
-.edit-btn:hover,
-.delete-btn:hover {
-  opacity: 0.85;
-  transform: translateY(-2px);
+  transition: all 0.2s ease;
+  text-decoration: none;
 }
 
 .view-btn {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.view-btn:hover {
   background: #10b981;
   color: white;
+  border-color: transparent;
 }
 
 .edit-btn {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.edit-btn:hover {
   background: #3b82f6;
   color: white;
+  border-color: transparent;
 }
 
 .delete-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.delete-btn:hover {
   background: #ef4444;
   color: white;
+  border-color: transparent;
 }

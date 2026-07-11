@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, field_validator
 from typing import List, Optional
 
@@ -33,6 +34,8 @@ class MovieResponse(MovieCreate):
 class CollectionBase(BaseModel):
     name: str
     description: Optional[str] = None
+    visibility: str = "private"
+    cover_image_url: Optional[str] = None
 
 
 class CollectionCreate(CollectionBase):
@@ -43,10 +46,21 @@ class CollectionUpdate(CollectionBase):
     pass
 
 
+class UserMinResponse(BaseModel):
+    username: str
+
+    class Config:
+        from_attributes = True
+
+
 class CollectionResponse(CollectionBase):
     id: int
     user_id: int
+    visibility: str
+    cover_image_url: Optional[str] = None
+    created_at: datetime
     movies: List[MovieResponse] = []
+    user: Optional[UserMinResponse] = None
 
     class Config:
         from_attributes = True

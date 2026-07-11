@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime, UniqueConstraint
 from sqlalchemy.orm import relationship
-from sqlalchemy import String
+from datetime import datetime
 from app.database import Base
 
 
@@ -12,6 +12,9 @@ class Collection(Base):
     description = Column(String(255), nullable=True)
 
     user_id = Column(Integer, ForeignKey("users.id"))
+    visibility = Column(Enum('public', 'private', name='visibility'), nullable=False, default='private')
+    cover_image_url = Column(String(255), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     user = relationship("User", back_populates="collections")
 
@@ -24,6 +27,8 @@ class Collection(Base):
 
 class CollectionMovie(Base):
     __tablename__ = "collection_movies"
+    __table_args__ = (UniqueConstraint('collection_id', 'movie_id', name='uq_collection_movie'),)
+
 
     id = Column(Integer, primary_key=True, index=True)
 

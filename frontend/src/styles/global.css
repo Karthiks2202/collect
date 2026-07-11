@@ -10,6 +10,7 @@
 body{
   background:#0f172a;
   color:white;
+  overflow-x: hidden;
 }
 
 /* Layout */
@@ -30,6 +31,8 @@ body{
   background:#111827;
   padding:25px;
   box-shadow:4px 0 15px rgba(0,0,0,0.4);
+  z-index: 900;
+  transition: transform 0.3s ease;
 }
 
 .sidebar h2{
@@ -62,12 +65,41 @@ body{
   color:#3f6e82;
 }
 
+/* Hamburger toggle (mobile) */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 950;
+  background: rgba(17, 24, 39, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white;
+  font-size: 22px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 899;
+}
+
 /* Main */
 
 .main-content{
   margin-left:260px;
   width:100%;
   padding:30px;
+  min-height:100vh;
 }
 
 /* Navbar */
@@ -269,10 +301,8 @@ body{
   font-weight:600;
   cursor:pointer;
 }
-/* =========================
-   COLLECTION BUTTON
-========================= */
 
+/* Collection Button */
 .collection-btn {
   width: 100%;
   margin-top: 10px;
@@ -291,11 +321,7 @@ body{
   background-color: #1d4ed8;
 }
 
-
-/* =========================
-   COLLECTION PAGE
-========================= */
-
+/* Collections Page */
 .collections-container {
   padding: 30px;
 }
@@ -331,8 +357,6 @@ body{
   background: #1d4ed8;
 }
 
-/* collection-card styles are in Collection.css */
-
 .collection-movies {
   display: flex;
   gap: 15px;
@@ -353,8 +377,6 @@ body{
   font-size: 14px;
   text-align: center;
 }
-
-/* delete-btn styles are in Collection.css */
 
 .notification-btn {
   position: relative;
@@ -378,4 +400,115 @@ body{
   justify-content: center;
   font-size: 12px;
   font-weight: bold;
+}
+
+/* =========================
+   RESPONSIVE BREAKPOINTS
+   ========================= */
+
+/* Tablet: <= 992px */
+@media (max-width: 992px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-toggle {
+    display: flex;
+  }
+
+  .sidebar-overlay.visible {
+    display: block;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 20px;
+    padding-top: 72px;
+  }
+
+  .navbar {
+    padding-left: 60px;
+  }
+
+  .movies-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .movie-card img {
+    height: 260px;
+  }
+
+  .section-title {
+    font-size: 26px;
+  }
+
+  .search-bar {
+    flex-direction: column;
+  }
+
+  .search-bar button {
+    width: 100%;
+  }
+}
+
+/* Mobile: <= 640px */
+@media (max-width: 640px) {
+  .main-content {
+    padding: 16px;
+    padding-top: 68px;
+  }
+
+  .navbar {
+    margin-bottom: 20px;
+    padding-left: 56px;
+  }
+
+  .logo {
+    font-size: 24px;
+  }
+
+  .movies-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .movie-card img {
+    height: 200px;
+  }
+
+  .movie-info {
+    padding: 12px;
+  }
+
+  .movie-info h3 {
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+
+  .movie-info p {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .section-title {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  .notification-btn {
+    font-size: 20px;
+  }
+
+  .notification-badge {
+    min-width: 16px;
+    height: 16px;
+    font-size: 10px;
+    top: -4px;
+    right: -4px;
+  }
 }

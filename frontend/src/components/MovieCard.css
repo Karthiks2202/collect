@@ -25,3 +25,18 @@
 .collection-btn:hover {
   background-color: #5a32a3;
 }
+
+@media (max-width: 640px) {
+  .movie-info h3 {
+    font-size: 15px;
+  }
+
+  .movie-info p {
+    font-size: 12px;
+  }
+
+  .movie-info button {
+    padding: 10px;
+    font-size: 13px;
+  }
+}

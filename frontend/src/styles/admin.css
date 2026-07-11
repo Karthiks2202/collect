@@ -142,3 +142,135 @@ button:hover {
   background: #6366f1;
   border-radius: 20px;
 }
+
+/* =========================
+   ADMIN RESPONSIVE
+   ========================= */
+
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    min-height: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .admin-sidebar .logo-section {
+    margin-bottom: 0;
+    text-align: left;
+  }
+
+  .admin-sidebar nav {
+    flex-direction: row;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .admin-sidebar nav a {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .admin-sidebar .logout-section {
+    position: static;
+    width: auto;
+    margin-top: 0;
+  }
+
+  .admin-sidebar .logout-section button {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+
+  .hero-banner {
+    padding: 24px;
+  }
+
+  .hero-banner h1 {
+    font-size: 24px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .stat-card {
+    padding: 20px;
+  }
+
+  .stat-card h2 {
+    font-size: 28px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  table {
+    min-width: 600px;
+  }
+
+  th, td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 16px;
+  }
+
+  .hero-banner {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .hero-banner h1 {
+    font-size: 20px;
+  }
+
+  .hero-banner p {
+    font-size: 14px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .stat-card h2 {
+    font-size: 24px;
+  }
+
+  .stat-card p {
+    font-size: 13px;
+  }
+
+  .admin-sidebar nav a {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
