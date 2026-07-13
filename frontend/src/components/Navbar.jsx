@@ -10,8 +10,7 @@ function Navbar() {
     try {
       const data = await getUnreadCount();
       setCount(data.count);
-    } catch (error) {
-      console.error("Failed to load unread count:", error);
+    } catch {
     }
   };
 

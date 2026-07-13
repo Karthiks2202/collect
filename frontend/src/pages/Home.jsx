@@ -43,8 +43,7 @@ function Home() {
         console.warn("Could not save search history");
       }
 
-    } catch (error) {
-      console.error("Search error:", error);
+    } catch {
       setSearchError("Search failed. Please try again.");
     }
   };
@@ -57,8 +56,8 @@ function Home() {
         if (active) {
           setRecommendedMovies(response.data.recommended_movies || []);
         }
-      } catch (error) {
-        console.error("Recommendations error:", error);
+      } catch {
+        // Silently ignore — recommendations are non-critical
       }
     };
     fetchRecommendations();

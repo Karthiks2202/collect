@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
 import {
   getCollections,
@@ -8,6 +7,8 @@ import {
   deleteCollection,
 } from "../services/collectionService";
 import CreateCollectionModal from "../components/CreateCollectionModal";
+import ConfirmDialog from "../components/ConfirmDialog";
+import CollectionCard from "../components/CollectionCard";
 
 import "./Collection.css";
 
@@ -17,6 +18,7 @@ const Collections = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   const loadCollections = useCallback(async () => {
     setLoading(true);
@@ -24,7 +26,6 @@ const Collections = () => {
       const data = await getCollections();
       setCollections(data);
     } catch (error) {
-      console.error(error);
       showToast(error.response?.data?.detail || "Failed to load collections ❌", "error");
     } finally {
       setLoading(false);
@@ -61,36 +62,24 @@ const Collections = () => {
       setEditingCollection(null);
       loadCollections();
     } catch (error) {
-      console.error(error);
       const detail = error.response?.data?.detail;
       showToast(typeof detail === "string" ? detail : "Operation failed ❌", "error");
     }
   };
 
-  const handleDelete = useCallback(async (id) => {
-    if (!window.confirm("Are you sure you want to delete this collection?")) return;
-
+  const handleDeleteConfirmed = useCallback(async () => {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
     try {
       await deleteCollection(id);
       showToast("Collection deleted successfully! 🗑️", "success");
       loadCollections();
     } catch (error) {
-      console.error(error);
       showToast(error.response?.data?.detail || "Failed to delete collection ❌", "error");
     }
-  }, [loadCollections, showToast]);
+  }, [pendingDeleteId, loadCollections, showToast]);
 
-  const formatDate = (dateStr) => {
-    try {
-      return new Date(dateStr).toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
-    } catch {
-      return "N/A";
-    }
-  };
 
   return (
     <div className="collections-page">
@@ -122,55 +111,12 @@ const Collections = () => {
             </div>
           ) : (
             collections.map((collection) => (
-              <div className="collection-card" key={collection.id}>
-                <div className="card-cover">
-                  {collection.cover_image_url ? (
-                    <img src={collection.cover_image_url} alt={collection.name} />
-                  ) : (
-                    <div className="card-cover-fallback">
-                      <span className="fallback-icon">🎬</span>
-                    </div>
-                  )}
-                  <span className={`visibility-badge ${collection.visibility}`}>
-                    {collection.visibility === "public" ? "🌐 Public" : "🔒 Private"}
-                  </span>
-                </div>
-
-                <div className="collection-body">
-                  <h3>{collection.name}</h3>
-                  <p className="description">
-                    {collection.description || "No description provided."}
-                  </p>
-                  <div className="meta-info">
-                    <span className="movie-count">
-                      🎥 {collection.movies?.length || 0} movies
-                    </span>
-                    <span className="created-date">
-                      📅 {formatDate(collection.created_at)}
-                    </span>
-                  </div>
-
-                  <div className="card-buttons">
-                    <Link to={`/collections/${collection.id}`} className="view-btn">
-                      📂 Open
-                    </Link>
-                    <button
-                      type="button"
-                      className="edit-btn"
-                      onClick={() => handleOpenEditModal(collection)}
-                    >
-                      ✏️ Edit
-                    </button>
-                    <button
-                      type="button"
-                      className="delete-btn"
-                      onClick={() => handleDelete(collection.id)}
-                    >
-                      🗑️ Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <CollectionCard
+                key={collection.id}
+                collection={collection}
+                onEdit={handleOpenEditModal}
+                onDelete={setPendingDeleteId}
+              />
             ))
           )}
         </div>
@@ -184,6 +130,16 @@ const Collections = () => {
         }}
         onSave={handleSaveCollection}
         initialData={editingCollection}
+      />
+
+      <ConfirmDialog
+        isOpen={pendingDeleteId !== null}
+        title="Delete Collection?"
+        message="This will permanently delete the collection and cannot be undone."
+        confirmLabel="Delete"
+        icon="🗑️"
+        onConfirm={handleDeleteConfirmed}
+        onCancel={() => setPendingDeleteId(null)}
       />
     </div>
   );

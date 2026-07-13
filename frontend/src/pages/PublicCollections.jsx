@@ -21,7 +21,6 @@ const PublicCollections = () => {
       const data = await getPublicCollections();
       setCollections(data);
     } catch (error) {
-      console.error(error);
       showToast(error.response?.data?.detail || "Failed to load public collections ❌", "error");
     } finally {
       setLoading(false);
@@ -47,7 +46,6 @@ const PublicCollections = () => {
       const data = await searchCollections(searchQuery.trim());
       setCollections(data);
     } catch (error) {
-      console.error(error);
       showToast("Search failed. Please try again ❌", "error");
     } finally {
       setIsSearching(false);

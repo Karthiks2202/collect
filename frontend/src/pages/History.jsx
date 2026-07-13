@@ -12,8 +12,8 @@ function History() {
       // ✅ Use shared API instance (no hardcoded URL, token auto-attached)
       const response = await API.get("/history");
       setHistory(response.data.data || []);
-    } catch (error) {
-      console.error("Failed to fetch history:", error);
+    } catch {
+      // Silently ignore — no toast context available in this component
     }
   }, []);
 

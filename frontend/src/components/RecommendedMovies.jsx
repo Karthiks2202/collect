@@ -25,8 +25,7 @@ function RecommendedMovies() {
       // ✅ Use shared API instance (no hardcoded URL, token auto-attached)
       const response = await API.get("/recommendations");
       setMovies(response.data.recommended_movies || []);
-    } catch (error) {
-      console.error("Recommendations fetch failed:", error);
+    } catch {
     } finally {
       setLoading(false);
     }

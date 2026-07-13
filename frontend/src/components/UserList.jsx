@@ -8,8 +8,7 @@ function UserList() {
     try {
       const res = await API.get("/admin/users");
       setUsers(res.data);
-    } catch (err) {
-      console.error("Failed to fetch users:", err);
+    } catch {
     }
   }, []);
 

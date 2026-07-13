@@ -21,8 +21,7 @@ function Watchlist() {
     try {
       const response = await API.get("/watchlist/");
       setWatchlistMovies(response.data.watchlist || []);
-    } catch (err) {
-      console.error("Failed to fetch watchlist:", err);
+    } catch {
       setError("Could not load watchlist. Please try again.");
     } finally {
       setLoading(false);
@@ -35,8 +34,7 @@ function Watchlist() {
     try {
       const response = await API.get("/watched/");
       setWatchedMovies(response.data.data || []);
-    } catch (err) {
-      console.error("Failed to fetch watched history:", err);
+    } catch {
       setError("Could not load watched history. Please try again.");
     } finally {
       setLoading(false);
@@ -59,8 +57,7 @@ function Watchlist() {
       await API.delete(`/watchlist/${id}`);
       setWatchlistMovies((prev) => prev.filter((m) => m.id !== id));
       showToast("Movie removed from watchlist", "success");
-    } catch (err) {
-      console.error("Failed to remove watchlist movie:", err);
+    } catch {
       showToast("Failed to remove movie", "error");
     }
   }, [showToast]);
@@ -77,8 +74,7 @@ function Watchlist() {
       await API.post("/watched/", watchedData);
       setWatchlistMovies((prev) => prev.filter((m) => m.id !== movie.id));
       showToast(`"${movie.movie_title}" marked as watched!`, "success");
-    } catch (err) {
-      console.error("Mark watched failed:", err);
+    } catch {
       showToast("Failed to mark movie as watched", "error");
     }
   }, [showToast]);
@@ -88,8 +84,7 @@ function Watchlist() {
       await API.delete(`/watched/${movieId}`);
       setWatchedMovies((prev) => prev.filter((m) => m.movie_id !== movieId));
       showToast("Movie removed from watched history", "success");
-    } catch (err) {
-      console.error("Failed to remove watched movie:", err);
+    } catch {
       showToast("Failed to remove movie", "error");
     }
   }, [showToast]);
@@ -106,8 +101,7 @@ function Watchlist() {
       await API.delete(`/watched/${movie.movie_id}`);
       setWatchedMovies((prev) => prev.filter((m) => m.movie_id !== movie.movie_id));
       showToast(`"${movie.movie_title}" moved back to Watchlist!`, "success");
-    } catch (err) {
-      console.error("Failed to move back to watchlist:", err);
+    } catch {
       showToast("Failed to move movie", "error");
     }
   }, [showToast]);

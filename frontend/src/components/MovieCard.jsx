@@ -35,8 +35,7 @@ function MovieCard({ movie }) {
     try {
       const data = await getCollections();
       setCollections(data);
-    } catch (error) {
-      console.error("Failed to load collections:", error);
+    } catch {
     }
   }, []);
 
@@ -73,7 +72,6 @@ function MovieCard({ movie }) {
       const response = await API.post("/favorites/", favoriteData);
       alert(response.data.message || "Added to Favorites ❤️");
     } catch (error) {
-      console.error(error);
       alert(error.response?.data?.detail || "Favorite failed ❌");
     }
   };
@@ -93,7 +91,6 @@ function MovieCard({ movie }) {
       setInWatchlist(true);
       alert(response.data.message || "Added to Watchlist 📺");
     } catch (error) {
-      console.error(error);
       alert(error.response?.data?.detail || "Watchlist failed ❌");
     }
   };
@@ -122,7 +119,6 @@ function MovieCard({ movie }) {
         alert("Marked as Watched 👁️");
       }
     } catch (error) {
-      console.error(error);
       alert(error.response?.data?.detail || "Action failed ❌");
     }
   };
@@ -146,7 +142,6 @@ function MovieCard({ movie }) {
       setAddReviewModal(false);
       alert(response.data.message || "Review Added ⭐");
     } catch (error) {
-      console.error(error);
       alert(error.response?.data?.detail || "Review failed ❌");
     }
   };
@@ -159,7 +154,6 @@ function MovieCard({ movie }) {
       const response = await API.get(`/reviews/${movieId}`);
       setReviewModal(response.data.reviews || []);
     } catch (error) {
-      console.error(error);
       setReviewModal([]);
     } finally {
       setReviewsLoading(false);
@@ -187,7 +181,6 @@ function MovieCard({ movie }) {
       setIsCollectionModalOpen(false);
       setSelectedCollections([]);
     } catch (error) {
-      console.error(error);
       showToast(error.response?.data?.detail || "Failed to add movie to some collections ❌", "error");
     }
   };

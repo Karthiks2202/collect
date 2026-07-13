@@ -16,8 +16,7 @@ function AdminDashboard() {
     try {
       const res = await API.get("/admin/stats");
       setStats(res.data);
-    } catch (err) {
-      console.error(err);
+    } catch {
     } finally {
       setLoading(false);
     }

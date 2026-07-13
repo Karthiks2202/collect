@@ -18,8 +18,7 @@ const AddToCollection = ({ movie }) => {
       if (data.length > 0) {
         setSelectedCollection(data[0].id);
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
     }
   }, []);
 
@@ -44,8 +43,7 @@ const AddToCollection = ({ movie }) => {
       });
 
       showToast("Movie added successfully!", "success");
-    } catch (error) {
-      console.error(error);
+    } catch {
       showToast("Unable to add movie.", "error");
     }
   };

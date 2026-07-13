@@ -13,8 +13,7 @@ export const CompareProvider = ({ children }) => {
     if (saved) {
       try {
         return JSON.parse(saved);
-      } catch (e) {
-        console.error("Failed to parse compare_movies from localStorage", e);
+      } catch {
       }
     }
     return [];

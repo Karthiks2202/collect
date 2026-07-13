@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 from datetime import datetime, timedelta, timezone, date
 from calendar import month_abbr
 
@@ -99,23 +98,28 @@ def get_top_genres(
 ):
     uid = current_user.id
 
-    results = (
-        db.query(ViewedMovie.genre, func.count(ViewedMovie.id).label("count"))
+    # Fetch raw genre strings — these may be comma-separated (e.g. "Action, Thriller")
+    rows = (
+        db.query(ViewedMovie.genre)
         .filter(
             ViewedMovie.user_id == uid,
             ViewedMovie.genre != None,
             ViewedMovie.genre != ""
         )
-        .group_by(ViewedMovie.genre)
-        .order_by(func.count(ViewedMovie.id).desc())
-        .limit(5)
         .all()
     )
 
-    return [
-        {"genre": row.genre, "count": row.count}
-        for row in results
-    ]
+    # Split each entry by comma and count individual genres
+    genre_counts: dict[str, int] = {}
+    for (genre_str,) in rows:
+        for genre in genre_str.split(","):
+            genre = genre.strip()
+            if genre:
+                genre_counts[genre] = genre_counts.get(genre, 0) + 1
+
+    # Return top 5 by count, descending
+    top_genres = sorted(genre_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+    return [{"genre": g, "count": c} for g, c in top_genres]
 
 
 # =========================================

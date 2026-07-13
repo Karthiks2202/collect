@@ -11,8 +11,7 @@ function Favorites() {
       // ✅ Use shared API instance (token attached automatically)
       const response = await API.get("/favorites/");
       setFavorites(response.data.favorites || []);
-    } catch (error) {
-      console.error("Failed to fetch favorites:", error);
+    } catch {
     }
   }, []);
 
@@ -28,8 +27,7 @@ function Favorites() {
       await API.delete(`/favorites/${id}`);
       setFavorites((prevFavs) => prevFavs.filter((movie) => movie.id !== id));
       showToast("Removed from favorites", "success");
-    } catch (error) {
-      console.error("Failed to remove favorite:", error);
+    } catch {
       showToast("Failed to remove movie", "error");
     }
   }, [showToast]);

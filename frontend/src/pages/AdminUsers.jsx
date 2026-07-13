@@ -11,8 +11,7 @@ const AdminUsers = () => {
       // ✅ Use shared API instance (no hardcoded URL, token auto-attached)
       const res = await API.get("/admin/users");
       setUsers(res.data.users);
-    } catch (err) {
-      console.error(err);
+    } catch {
     }
   }, []);
 
@@ -28,8 +27,7 @@ const AdminUsers = () => {
       await API.delete(`/admin/users/${id}`);
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
       showToast("User deleted successfully", "success");
-    } catch (err) {
-      console.error(err);
+    } catch {
       showToast("Failed to delete user", "error");
     }
   }, [showToast]);

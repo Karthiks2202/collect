@@ -19,8 +19,7 @@ function WatchedHistory() {
     try {
       const response = await API.get("/watched/");
       setWatchedMovies(response.data.data || []);
-    } catch (err) {
-      console.error("Failed to fetch watched history:", err);
+    } catch {
       setError("Could not load watched history. Please try again.");
     } finally {
       setLoading(false);
@@ -39,8 +38,7 @@ function WatchedHistory() {
       await API.delete(`/watched/${movieId}`);
       setWatchedMovies((prev) => prev.filter((m) => m.movie_id !== movieId));
       showToast("Removed from Watched History 👁️", "success");
-    } catch (err) {
-      console.error("Failed to remove watched movie:", err);
+    } catch {
       showToast("Failed to remove movie", "error");
     }
   }, [showToast]);
@@ -57,8 +55,7 @@ function WatchedHistory() {
       await API.delete(`/watched/${movie.movie_id}`);
       setWatchedMovies((prev) => prev.filter((m) => m.movie_id !== movie.movie_id));
       showToast(`"${movie.movie_title}" moved back to Watchlist! 📺`, "success");
-    } catch (err) {
-      console.error("Failed to move back to watchlist:", err);
+    } catch {
       showToast("Failed to move movie", "error");
     }
   }, [showToast]);

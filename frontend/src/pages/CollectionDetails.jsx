@@ -6,6 +6,7 @@ import {
   getCollection,
   removeMovieFromCollection,
 } from "../services/collectionService";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 import "./CollectionDetails.css";
 
@@ -19,6 +20,7 @@ const CollectionDetails = () => {
   const [moviesDetails, setMoviesDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
+  const [pendingRemoveId, setPendingRemoveId] = useState(null);
 
   useEffect(() => {
     try {
@@ -26,8 +28,8 @@ const CollectionDetails = () => {
       if (u) {
         setCurrentUser(JSON.parse(u));
       }
-    } catch (e) {
-      console.error("Failed to parse user from localStorage", e);
+    } catch {
+      // Silently ignore parse errors — currentUser defaults to null
     }
   }, []);
 
@@ -45,8 +47,7 @@ const CollectionDetails = () => {
               `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&i=${movie.movie_id}`
             );
             return { [movie.movie_id]: res.data };
-          } catch (err) {
-            console.error(`Failed to fetch OMDB details for ${movie.movie_id}:`, err);
+          } catch {
             return { [movie.movie_id]: null };
           }
         });
@@ -55,7 +56,6 @@ const CollectionDetails = () => {
         setMoviesDetails(mergedDetails);
       }
     } catch (error) {
-      console.error(error);
       showToast(error.response?.data?.detail || "Failed to load collection details ❌", "error");
     } finally {
       setLoading(false);
@@ -69,18 +69,18 @@ const CollectionDetails = () => {
     return () => clearTimeout(t);
   }, [loadCollection]);
 
-  const handleRemove = useCallback(async (movieId) => {
-    if (!window.confirm("Remove this movie from the collection?")) return;
-
+  const handleRemoveConfirmed = useCallback(async () => {
+    if (!pendingRemoveId) return;
+    const movieId = pendingRemoveId;
+    setPendingRemoveId(null);
     try {
       await removeMovieFromCollection(id, movieId);
       showToast("Movie removed from collection successfully! 🍿", "success");
       loadCollection();
     } catch (error) {
-      console.error(error);
       showToast(error.response?.data?.detail || "Failed to remove movie ❌", "error");
     }
-  }, [id, loadCollection, showToast]);
+  }, [pendingRemoveId, id, loadCollection, showToast]);
 
   if (loading) {
     return (
@@ -174,7 +174,7 @@ const CollectionDetails = () => {
                     {isOwner && (
                       <button
                         className="remove-from-col-btn"
-                        onClick={() => handleRemove(movie.movie_id)}
+                        onClick={() => setPendingRemoveId(movie.movie_id)}
                       >
                         🗑️ Remove
                       </button>
@@ -186,6 +186,16 @@ const CollectionDetails = () => {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={pendingRemoveId !== null}
+        title="Remove Movie?"
+        message="This movie will be removed from the collection."
+        confirmLabel="Remove"
+        icon="🍿"
+        onConfirm={handleRemoveConfirmed}
+        onCancel={() => setPendingRemoveId(null)}
+      />
     </div>
   );
 };

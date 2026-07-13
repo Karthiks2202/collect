@@ -15,8 +15,8 @@ function Notifications() {
     try {
       const data = await getNotifications();
       setNotifications(data);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Silently ignore — no UI action needed for notification load failures
     }
   }, []);
 

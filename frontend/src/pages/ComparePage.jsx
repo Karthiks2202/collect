@@ -47,7 +47,6 @@ function ComparePage() {
         const response = await API.get("/movies/compare", { params });
         setCompareData(response.data);
       } catch (err) {
-        console.error("Comparison fetch error:", err);
         setError(
           err.response?.data?.detail || "Failed to load movie comparison data."
         );

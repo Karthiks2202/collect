@@ -9,8 +9,7 @@ function AdminReviews() {
     try {
       const res = await API.get("/admin/reviews");
       setReviews(res.data.reviews);
-    } catch (err) {
-      console.error(err);
+    } catch {
     }
   }, []);
 
@@ -25,8 +24,7 @@ function AdminReviews() {
     try {
       await API.delete(`/admin/reviews/${id}`);
       fetchReviews();
-    } catch (err) {
-      console.error(err);
+    } catch {
     }
   }, [fetchReviews]);
 
